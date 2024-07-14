@@ -12,7 +12,7 @@
         <div class="form-box">
             <h2>LOGIN</h2>
             <form id="loginForm">
-                <label for="username">Username:</label>
+                <label for="username">Email:</label>
                 <input type="text" id="username" name="username" required placeholder="Email">
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required placeholder="Password">
@@ -22,6 +22,11 @@
         </div>
     </div>
 </div>
+        <!--added pop-up    -->
+    <div id="popup" class="popup">
+        <button class="close-btn" onclick="closePopup()">x</button>
+        <span id="popupMessage"></span>
+    </div>
 <script src="auth.js"></script>
 </body>
 </html>
