@@ -11,7 +11,7 @@
     <div class="form-container">
         <div class="form-box">
             <h2>SIGN UP</h2>
-            <form id="signupForm">
+            <form id="signupForm" method="POST">
                 <label for="firstName">First Name:</label>
                 <input type="text" id="firstName" name="firstName" required>
                 <label for="lastName">Last Name:</label>
@@ -22,12 +22,21 @@
                 <input type="email" id="email" name="email" required>
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required>
+                
+
+                
                 <button type="submit">Sign Up</button>
             </form>
             <p>Already have an account? <a href="login.html">Login here</a></p>
         </div>
     </div>
 </div>
-<script src="auth.js"></script>
+    
+<!--added pop-up    -->
+<div id="popup" class="popup">
+    <button class="close-btn" onclick="closePopup()">x</button>
+    <span id="popupMessage"></span>
+</div>
+<script src="create.js"></script>
 </body>
 </html>
