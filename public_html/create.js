@@ -28,13 +28,13 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             const messageDiv = document.getElementById('message');
                 if (data.status === false) {
-                    showPopup(data.message);
-//                    messageDiv.style.display = 'block';
-//                    messageDiv.textContent = data.message;
-//                    messageDiv.classList.remove('success-message');
-//                    messageDiv.classList.add('error-message');
+                    showPopup(data.message, type = 'error');
+                }else{
+                    showPopup(data.message,type = 'success');
                 }
             console.log('Success:', data);
+            
+            document.getElementById('signupForm').reset();
         })
         .catch((error) => {
             window.alert(error);
@@ -44,21 +44,19 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 //here are some pop up changes...check css for it as well..
+function showPopup(message, type) {
+    const popup = document.getElementById('popup');
+    const popupMessage = document.getElementById('popupMessage');
+    popupMessage.textContent = message;
 
-function showPopup(message, type = 'error') {
-            const popup = document.getElementById('popup');
-            const popupMessage = document.getElementById('popupMessage');
-            popupMessage.textContent = message;
+    if (type === 'error') {
+        popup.style.backgroundColor = 'red';
+    } else if (type === 'success'){
+        popup.style.backgroundColor = 'green';
+    }
+    popup.style.display = 'block';
+}
 
-            if (type === 'error') {
-                popup.style.backgroundColor = 'red';
-            } else {
-                popup.style.backgroundColor = 'green';
-            }
-
-            popup.style.display = 'block';
-        }
-
-        function closePopup() {
-            document.getElementById('popup').style.display = 'none';
-        }
+function closePopup() {
+    document.getElementById('popup').style.display = 'none';
+}
