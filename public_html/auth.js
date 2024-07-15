@@ -22,7 +22,9 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
             showPopup(data.message,type = 'error');
         }
         else{
+            localStorage.setItem('token',data.data.token);
             showPopup(data.message,type = 'success');
+            window.location.href = 'user.html';
         }
         console.log('Success:', data);
     })

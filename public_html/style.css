@@ -87,9 +87,9 @@ p {
 .popup {
     display: none;
     position: fixed;
-    top: 50%;
+    top: 10%; /* Adjust this value to position the popup further down or up */
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
     background-color: red;
     color: white;
     padding: 20px;
@@ -123,3 +123,4 @@ p {
     background-color: white;
     color: red;
 }
+

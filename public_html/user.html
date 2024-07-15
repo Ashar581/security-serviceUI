@@ -9,7 +9,7 @@
 <body>
     <header>
         <div class="menu-toggle" onclick="openNav()"><span>&#9776;</span></div>
-        <div class="welcome-message">HEY, ASHAR</div>
+        <div class="welcome-message" id="welcomeMessage"></div>
         <div class="actions">
             <div class="emergency-button"></div>
             <div class="profile-icon" onclick="logout()"></div>
@@ -47,6 +47,12 @@
         <section id="location-section">
         </section>
     </main>
+<!--    Error Popup-->
+    <div class="popup" id="popup">
+        <span class="close-btn" id="closeBtn">&times;</span>
+        <div id="popupMessage"></div>
+    </div>
+
     <script src="user.js"></script>
 </body>
 </html>
