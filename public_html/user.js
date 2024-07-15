@@ -25,12 +25,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-function logout() {
-    // Handle logout functionality here
-    alert('Logged out!');
-    window.location.href = 'login.html';
-}
-
 function openNav() {
     document.getElementById("mySidebar").style.width = "250px";
 }
