@@ -31,6 +31,32 @@ document.addEventListener('DOMContentLoaded', function() {
                     showPopup(data.message, type = 'error');
                 }else{
                     showPopup(data.message,type = 'success');
+                            const loginData = {
+                                username: signupData.email,
+                                password: signupData.password
+                            };
+                            fetch('http://localhost:8080/api/auth/signin', { // Replace with your actual endpoint
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(loginData)
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if(data.status === false){
+                                showPopup(data.message,type = 'error');
+                            }
+                            else{
+                                localStorage.setItem('token',data.data.token);
+                                showPopup(data.message,type = 'success');
+                                window.location.href = 'user.html';
+                            }
+                            console.log('Success:', data);
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                        });
                 }
             console.log('Success:', data);
             
