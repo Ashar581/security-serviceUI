@@ -8,7 +8,10 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
         username: usr,
         password: pass
     };
-
+    
+    // Show loading bar when form is submitted
+    showLoadingBar(); 
+    
     fetch('http://localhost:8080/api/auth/signin', { // Replace with your actual endpoint
         method: 'POST',
         headers: {
@@ -30,6 +33,10 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     })
     .catch((error) => {
         console.error('Error:', error);
+    })
+    // Hide loading bar when API call completes
+    .finally(() => {
+        hideLoadingBar();
     });
 });
 
@@ -49,4 +56,14 @@ function showPopup(message, type) {
 
 function closePopup() {
     document.getElementById('popup').style.display = 'none';
+}
+
+// Function to show the loading bar
+function showLoadingBar() {
+    document.getElementById('loadingBar').style.display = 'block';
+}
+
+// Function to hide the loading bar
+function hideLoadingBar() {
+    document.getElementById('loadingBar').style.display = 'none';
 }

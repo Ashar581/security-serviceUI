@@ -124,3 +124,19 @@ p {
     color: red;
 }
 
+#loadingBar {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background-color: #3498db;
+    z-index: 1000; /* Ensure it sits above other content */
+    animation: loading 2s linear infinite; /* Simple loading animation */
+}
+
+@keyframes loading {
+    0% { width: 0%; }
+    100% { width: 100%; }
+}

@@ -39,6 +39,7 @@ function logout() {
 }
 
 async function fetchUserName() {
+    showLoadingBar();
 //    const token = 'eyJ0IjoiV1ZoT2IxbFlTWFZqTW1ob1lVZEdhVkZIVW5CYU1td3dXVmQ0ZW1GSFZubGpSMFYxV1ZkclBRPT0iLCJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJBc2hhciBTaGFoYWIiLCJqdGkiOiJhc2hhci5zaGFoYWJAZGlnaXRhbHNoZXJwYS5haSIsImlhdCI6MTcyMTA1OTYzMCwiZXhwIjoxNzIxMzE4ODMwLCJBbGxvd2VkIjp7Ikd1YXJkaWFuIjpudWxsfX0.oKckrzVK1uCPJQ5TGT_B02DrUefxqQgj8v_AkY_yyBoPIG87201CAy9HNVBD-2dI'; // Replace with your actual token, or retrieve it from localStorage/sessionStorage
     const token = localStorage.getItem('token');
     try {
@@ -63,6 +64,8 @@ async function fetchUserName() {
         }
     } catch (error) {
         console.error('There has been a problem with your fetch operation:', error);
+    } finally {
+        hideLoadingBar();
     }
 }
 
@@ -90,3 +93,13 @@ document.getElementById('closeBtn').addEventListener('click', () => {
 });
 
 window.onload = fetchUserName;
+
+// Function to show the loading bar
+function showLoadingBar() {
+    document.getElementById('loadingBar').style.display = 'block';
+}
+
+// Function to hide the loading bar
+function hideLoadingBar() {
+    document.getElementById('loadingBar').style.display = 'none';
+}

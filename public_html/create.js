@@ -15,7 +15,8 @@ document.addEventListener('DOMContentLoaded', function() {
             email: email,
             password: pass
         };
-
+        // Show loading bar when form is submitted
+        showLoadingBar(); 
         fetch('http://localhost:8080/api/user/add', { // Replace with your actual signup endpoint
             method: 'POST',
             headers: {
@@ -35,6 +36,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                 username: signupData.email,
                                 password: signupData.password
                             };
+                            // Show loading bar when form is submitted
+                            showLoadingBar(); 
                             fetch('http://localhost:8080/api/auth/signin', { // Replace with your actual endpoint
                             method: 'POST',
                             headers: {
@@ -56,6 +59,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         })
                         .catch((error) => {
                             console.error('Error:', error);
+                        })
+                        // Hide loading bar when API call completes
+                        .finally(() => {
+                            hideLoadingBar();
                         });
                 }
             console.log('Success:', data);
@@ -65,6 +72,10 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch((error) => {
             window.alert(error);
             console.error('Error:', error);
+        })
+        // Hide loading bar when API call completes
+        .finally(() => {
+            hideLoadingBar();
         });
     });
 });
@@ -85,4 +96,14 @@ function showPopup(message, type) {
 
 function closePopup() {
     document.getElementById('popup').style.display = 'none';
+}
+
+// Function to show the loading bar
+function showLoadingBar() {
+    document.getElementById('loadingBar').style.display = 'block';
+}
+
+// Function to hide the loading bar
+function hideLoadingBar() {
+    document.getElementById('loadingBar').style.display = 'none';
 }
