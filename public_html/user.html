@@ -12,8 +12,14 @@
         <div class="menu-toggle" onclick="openNav()"><span>&#9776;</span></div>
         <div class="welcome-message" id="welcomeMessage"></div>
         <div class="actions">
-            <div class="emergency-button"></div>
-            <div class="profile-icon" onclick="logout()"></div>
+            <div class="emergency-button">EMERGENCY</div>
+
+
+            <div class="profile-icon" onclick="logout()">
+                <svg class="logout-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M16 13v-2H7V8l-5 4 5 4v-3zM20 3H4c-1.1 0-2 .9-2 2v4h2V5h16v14H4v-4H2v4c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+                </svg>
+            </div>
         </div>
     </header>
     <div id="mySidebar" class="sidebar">

@@ -34,6 +34,7 @@ function closeNav() {
 }
 
 function logout() {
+    showLoadingBar();
     localStorage.removeItem('token');
     window.location.href = "login.html";
 }
@@ -52,7 +53,11 @@ async function fetchUserName() {
         });
 
         if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText);
+            if(response.status === 401){
+                showPopup("Unauthorized user");
+                logout();
+            }
+//            throw new Error('Network response was not ok ' + response.statusText);
         }
 
         const data = await response.json();
