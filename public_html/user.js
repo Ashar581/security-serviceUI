@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Event listeners for tabs
     document.getElementById('documents-tab').addEventListener('click', function() {
         setActiveTab('documents');
     });
@@ -7,24 +8,81 @@ document.addEventListener('DOMContentLoaded', function() {
         setActiveTab('location');
     });
 
-    function setActiveTab(tab) {
-        document.querySelectorAll('nav button').forEach(button => {
-            button.classList.remove('active');
-        });
-        document.getElementById(`${tab}-tab`).classList.add('active');
-
-        document.querySelectorAll('main section').forEach(section => {
-            section.classList.remove('active');
-        });
-        document.getElementById(`${tab}-section`).classList.add('active');
-    }
-
+    // Event listener for emergency button
     document.querySelector('.emergency-button').addEventListener('click', function() {
         alert('Emergency button clicked!');
         // Add emergency button handling code here
     });
+
+    // Event listener for close button on popup
+    document.getElementById('closeBtn').addEventListener('click', () => {
+        const popup = document.getElementById('popup');
+        popup.classList.add('hide');
+        popup.classList.remove('show');
+        setTimeout(() => {
+            popup.style.display = 'none';
+        }, 500); // Sync with the fade-out transition duration
+    });
+
+    // Fetch user name and load files on page load
+    fetchUserName();
+    loadFiles();
+
+    // Start the location tracking
+    sendLocation();
 });
 
+// Function to handle form submission for file upload
+document.getElementById('fileUploadForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const fileInput = document.getElementById('file');
+    const userId = document.getElementById('userId').value;
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    formData.append('userId', userId);
+
+    showLoadingBar(); // Show loading bar when form is submitted
+    const token = localStorage.getItem('token');
+
+    fetch('http://localhost:8080/api/files/add', { // Replace with your actual endpoint
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message.toLowerCase().includes('success')) {
+            showPopup(data.message, 'success');
+        } else {
+            showPopup(data.message, 'error');
+        }
+        console.log('Success:', data);
+    })
+    .catch((error) => {
+        showPopup('Error uploading file', 'error');
+        console.error('Error:', error);
+    })
+    .finally(() => {
+        hideLoadingBar(); // Hide loading bar when API call completes
+    });
+});
+
+// Function to set active tab
+function setActiveTab(tab) {
+    document.querySelectorAll('nav button').forEach(button => {
+        button.classList.remove('active');
+    });
+    document.getElementById(`${tab}-tab`).classList.add('active');
+
+    document.querySelectorAll('main section').forEach(section => {
+        section.classList.remove('active');
+    });
+    document.getElementById(`${tab}-section`).classList.add('active');
+}
+
+// Sidebar functions
 function openNav() {
     document.getElementById("mySidebar").style.width = "250px";
 }
@@ -33,15 +91,16 @@ function closeNav() {
     document.getElementById("mySidebar").style.width = "0";
 }
 
+// Logout function
 function logout() {
     showLoadingBar();
     localStorage.removeItem('token');
     window.location.href = "login.html";
 }
 
+// Fetch user name
 async function fetchUserName() {
     showLoadingBar();
-//    const token = 'eyJ0IjoiV1ZoT2IxbFlTWFZqTW1ob1lVZEdhVkZIVW5CYU1td3dXVmQ0ZW1GSFZubGpSMFYxV1ZkclBRPT0iLCJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJBc2hhciBTaGFoYWIiLCJqdGkiOiJhc2hhci5zaGFoYWJAZGlnaXRhbHNoZXJwYS5haSIsImlhdCI6MTcyMTA1OTYzMCwiZXhwIjoxNzIxMzE4ODMwLCJBbGxvd2VkIjp7Ikd1YXJkaWFuIjpudWxsfX0.oKckrzVK1uCPJQ5TGT_B02DrUefxqQgj8v_AkY_yyBoPIG87201CAy9HNVBD-2dI'; // Replace with your actual token, or retrieve it from localStorage/sessionStorage
     const token = localStorage.getItem('token');
     try {
         const response = await fetch('http://localhost:8080/api/user/view', {
@@ -57,7 +116,6 @@ async function fetchUserName() {
                 showPopup("Unauthorized user");
                 logout();
             }
-//            throw new Error('Network response was not ok ' + response.statusText);
         }
 
         const data = await response.json();
@@ -74,6 +132,7 @@ async function fetchUserName() {
     }
 }
 
+// Show popup message
 function showPopup(message) {
     const popup = document.getElementById('popup');
     const popupMessage = document.getElementById('popupMessage');
@@ -88,28 +147,16 @@ function showPopup(message) {
     }, 3500);
 }
 
-document.getElementById('closeBtn').addEventListener('click', () => {
-    const popup = document.getElementById('popup');
-    popup.classList.add('hide');
-    popup.classList.remove('show');
-    setTimeout(() => {
-        popup.style.display = 'none';
-    }, 500); // Sync with the fade-out transition duration
-});
-
-window.onload = fetchUserName;
-
-// Function to show the loading bar
+// Show/hide loading bar
 function showLoadingBar() {
     document.getElementById('loadingBar').style.display = 'block';
 }
 
-// Function to hide the loading bar
 function hideLoadingBar() {
     document.getElementById('loadingBar').style.display = 'none';
 }
 
-//map
+// Map functions
 let map;
 let marker;
 
@@ -148,11 +195,12 @@ async function updateLocation(position) {
     };
 
     try {
+        const token = localStorage.getItem('token');
         const response = await fetch('http://localhost:8080/api/location/get-live', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer eyJ0IjoiWTIxR2NVeHRkREZpVjBaNVVVZFNjRm95YkRCWlYzaDZZVWRXZVdOSFJYVlpWMnM5IiwiYWxnIjoiSFMzODQifQ.eyJzdWIiOiJSYWogS3VtYXIiLCJqdGkiOiJyYWoua3VtYXJAZGlnaXRhbHNoZXJwYS5haSIsImlhdCI6MTcyMTExMjA2NSwiZXhwIjoxNzIxMzcxMjY1LCJBbGxvd2VkIjp7Ikd1YXJkaWFuIjpudWxsfX0.CgDASNi1bebxwc1spZ4Nl-4wf50SInJ71teifpjxIi53iVxOoSHeEr5ZTWB_7Mwm'
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(location)
         });
@@ -214,6 +262,7 @@ function sendLocation() {
     }
 }
 
+// Function to show error messages if location fetching fails
 function showError(error) {
     switch (error.code) {
         case error.PERMISSION_DENIED:
@@ -231,8 +280,57 @@ function showError(error) {
     }
 }
 
-// Start the location tracking
-sendLocation();
-
 // Initialize map with a default location
 initMap(20.5937, 78.9629); // Coordinates for India
+
+// Function to load files from the backend
+function loadFiles() {
+    showLoadingBar();
+    const token = localStorage.getItem('token');
+    fetch('http://localhost:8080/api/files/view-all', { // Replace with your actual endpoint
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status) {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+            data.data.forEach(file => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'document';
+                fileItem.innerHTML = `<div>${file.fileName}</div>`;
+                fileList.appendChild(fileItem);
+                console.log(file.fileName);
+            });
+            const showAllBtn = document.createElement('div');
+            showAllBtn.className = 'show-all';
+            showAllBtn.innerText = 'SHOW ALL';
+            showAllBtn.onclick = showAllDocuments;
+            fileList.appendChild(showAllBtn);
+        } else {
+            showPopup('Error: ' + data.message, 'error');
+        }
+    })
+    .catch((error) => {
+        showPopup('Error loading files', 'error');
+        console.error('Error:', error);
+    })
+    .finally(() => {
+        hideLoadingBar();
+    });
+}
+
+// Function to show all documents (implement as needed)
+function showAllDocuments() {
+    // Add logic to show all documents
+}
+
+// Hide the loading bar once the entire page is fully loaded
+window.addEventListener('load', function() {
+    hideLoadingBar();
+    loadFiles();
+});

@@ -41,12 +41,21 @@
                     <button><i class="fa fa-microphone"></i></button>
                 </div>
                 <div class="actions">
-                    <button id="new-document">+ New Document</button>
+                    <form id="fileUploadForm">
+                        <input type="file" id="file" name="file" required>
+                        <input type="hidden" id="userId" name="userId" value="1"> <!-- Replace with actual user ID -->
+                        <button id="new-document" type="submit">Upload</button>
+                    </form>
+<!--                    <button id="new-document">+ New Document</button>-->
                     <button id="new-folder">+ New Folder</button>
                 </div>
             </div>
+            
             <div class="documents-list">
-                <div class="document">DOCUMENT 1</div>
+                <div class="documents-list" id="fileList">
+                    <div class="show-all" onclick="showAllDocuments()">SHOW ALL</div>
+                </div>
+<!--                <div class="document">DOCUMENT 1</div>
                 <div class="document">DOCUMENT 2</div>
                 <div class="document">DOCUMENT 3</div>
                 <div class="document">DOCUMENT 1</div>
@@ -55,7 +64,7 @@
                 <div class="document">DOCUMENT 1</div>
                 <div class="document">DOCUMENT 2</div>
                 <div class="document">DOCUMENT 3</div>
-                <div class="show-all">SHOW ALL</div>
+                <div class="show-all">SHOW ALL</div>-->
             </div>
         </section>
         <section id="location-section">
