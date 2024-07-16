@@ -211,13 +211,16 @@ section.active {
 }
 
 .document {
+    cursor: pointer;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
     margin-bottom: 10px;
     background-color: white;
 }
-
+.document:hover {
+    background-color: #e9e9e9;
+}
 .show-all {
     color: #007bff;
     cursor: pointer;

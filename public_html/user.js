@@ -303,6 +303,7 @@ function loadFiles() {
                 const fileItem = document.createElement('div');
                 fileItem.className = 'document';
                 fileItem.innerHTML = `<div>${file.fileName}</div>`;
+                fileItem.addEventListener('click', () => viewFile(file.fileId)); // Add event listener
                 fileList.appendChild(fileItem);
                 console.log(file.fileName);
             });
@@ -322,6 +323,41 @@ function loadFiles() {
     .finally(() => {
         hideLoadingBar();
     });
+}
+
+function viewFile(fileId) {
+    showLoadingBar();
+    const token = localStorage.getItem('token');
+    fetch(`http://localhost:8080/api/files/view/${fileId}`, { // Replace with your actual endpoint
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status) {
+            const byteArray = Uint8Array.from(atob(data.data.data), c => c.charCodeAt(0));
+            const blob = new Blob([byteArray], { type: data.data.fileType });
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+        } else {
+            showPopup('Error: ' + data.message, 'error');
+        }
+    })
+    .catch((error) => {
+        showPopup('Error viewing file', 'error');
+        console.error('Error:', error);
+    })
+    .finally(() => {
+        hideLoadingBar();
+    });
+}
+
+
+// Function to show all documents (implement as needed)
+function showAllDocuments() {
+    // Add logic to show all documents
 }
 
 // Function to show all documents (implement as needed)
