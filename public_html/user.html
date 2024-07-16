@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Dashboard</title>
     <link rel="stylesheet" href="user.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 <body>
 <div id="loadingBar"></div>    
@@ -52,6 +53,16 @@
             </div>
         </section>
         <section id="location-section">
+            <div class="actions">
+                <button id="new-document">View Location</button>
+                <button id="new-folder"> Request Location</button>
+            </div>
+<!--            add the location-->
+            <div class="mapContainer">
+                <h1>Live Location Tracker</h1>
+                <p id="status"></p>
+                <div id="map"></div>
+            </div>
         </section>
     </main>
 <!--    Error Popup-->
@@ -61,5 +72,6 @@
     </div>
 
     <script src="user.js"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </body>
 </html>

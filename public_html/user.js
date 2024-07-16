@@ -108,3 +108,131 @@ function showLoadingBar() {
 function hideLoadingBar() {
     document.getElementById('loadingBar').style.display = 'none';
 }
+
+//map
+let map;
+let marker;
+
+function initMap(latitude, longitude) {
+    const zoomLevel = 16; // Set your desired zoom level
+
+    if (!map) {
+        map = L.map('map', {
+            zoomControl: false, // Disable zoom control buttons
+            scrollWheelZoom: false, // Disable zoom by scrolling
+            doubleClickZoom: false, // Disable zoom by double-clicking
+            boxZoom: false, // Disable zoom by dragging a box
+            touchZoom: false // Disable zoom by touch
+        }).setView([latitude, longitude], zoomLevel);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+    } else {
+        map.setView([latitude, longitude], zoomLevel);
+    }
+
+    if (!marker) {
+        marker = L.marker([latitude, longitude]).addTo(map);
+    } else {
+        marker.setLatLng([latitude, longitude]);
+    }
+}
+
+async function updateLocation(position) {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+
+    const location = {
+        latitude: latitude,
+        longitude: longitude
+    };
+
+    try {
+        const response = await fetch('http://localhost:8080/api/location/get-live', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer eyJ0IjoiWTIxR2NVeHRkREZpVjBaNVVVZFNjRm95YkRCWlYzaDZZVWRXZVdOSFJYVlpWMnM5IiwiYWxnIjoiSFMzODQifQ.eyJzdWIiOiJSYWogS3VtYXIiLCJqdGkiOiJyYWoua3VtYXJAZGlnaXRhbHNoZXJwYS5haSIsImlhdCI6MTcyMTExMjA2NSwiZXhwIjoxNzIxMzcxMjY1LCJBbGxvd2VkIjp7Ikd1YXJkaWFuIjpudWxsfX0.CgDASNi1bebxwc1spZ4Nl-4wf50SInJ71teifpjxIi53iVxOoSHeEr5ZTWB_7Mwm'
+            },
+            body: JSON.stringify(location)
+        });
+
+        const data = await response.text();
+        // document.getElementById('status').innerHTML = data;
+        initMap(latitude, longitude);
+
+        // Call the function again to continue tracking
+        sendLocation();
+    } catch (error) {
+        document.getElementById('status').innerHTML = 'Error: ' + error;
+    }
+}
+
+function sendLocation() {
+    if (navigator.permissions) {
+        navigator.permissions.query({ name: 'geolocation' }).then(function (permissionStatus) {
+            if (permissionStatus.state === 'granted') {
+                // If permission is already granted, get the location
+                navigator.geolocation.getCurrentPosition(updateLocation, showError, {
+                    maximumAge: 0,
+                    timeout: 10000,
+                    enableHighAccuracy: true
+                });
+            } else if (permissionStatus.state === 'prompt') {
+                // Request permission if not already granted
+                navigator.geolocation.getCurrentPosition(updateLocation, showError, {
+                    maximumAge: 0,
+                    timeout: 10000,
+                    enableHighAccuracy: true
+                });
+            } else {
+                document.getElementById('status').innerHTML = "Geolocation permission is denied.";
+            }
+
+            // Listen for changes to the permission state
+            permissionStatus.onchange = function () {
+                if (permissionStatus.state === 'granted') {
+                    navigator.geolocation.getCurrentPosition(updateLocation, showError, {
+                        maximumAge: 0,
+                        timeout: 10000,
+                        enableHighAccuracy: true
+                    });
+                }
+            };
+        });
+    } else {
+        // Fallback for browsers that do not support the permissions API
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(updateLocation, showError, {
+                maximumAge: 0,
+                timeout: 10000,
+                enableHighAccuracy: true
+            });
+        } else {
+            document.getElementById('status').innerHTML = "Geolocation is not supported by this browser.";
+        }
+    }
+}
+
+function showError(error) {
+    switch (error.code) {
+        case error.PERMISSION_DENIED:
+            document.getElementById('status').innerHTML = "User denied the request for Geolocation.";
+            break;
+        case error.POSITION_UNAVAILABLE:
+            document.getElementById('status').innerHTML = "Location information is unavailable.";
+            break;
+        case error.TIMEOUT:
+            document.getElementById('status').innerHTML = "The request to get user location timed out.";
+            break;
+        case error.UNKNOWN_ERROR:
+            document.getElementById('status').innerHTML = "An unknown error occurred.";
+            break;
+    }
+}
+
+// Start the location tracking
+sendLocation();
+
+// Initialize map with a default location
+initMap(20.5937, 78.9629); // Coordinates for India
