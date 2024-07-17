@@ -43,9 +43,9 @@ document.getElementById('fileUploadForm').addEventListener('submit', function(ev
 
     showLoadingBar(); // Show loading bar when form is submitted
     const token = localStorage.getItem('token');
-//    fetch('http://localhost:8080/api/files/add', {
+    fetch('http://localhost:8080/api/files/add', {
 
-    fetch('https://security-service-f8c1.onrender.com/api/files/add', { // Replace with your actual endpoint
+//    fetch('https://security-service-f8c1.onrender.com/api/files/add', { // Replace with your actual endpoint
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`
@@ -126,8 +126,8 @@ async function fetchUserName() {
     showLoadingBar();
     const token = localStorage.getItem('token');
     try {
-//        const response = await fetch('http://localhost:8080/api/user/view', {
-        const response = await fetch('https://security-service-f8c1.onrender.com/api/user/view', {
+        const response = await fetch('http://localhost:8080/api/user/view', {
+//        const response = await fetch('https://security-service-f8c1.onrender.com/api/user/view', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -189,21 +189,22 @@ function initMap(latitude, longitude) {
 
     if (!map) {
         map = L.map('map', {
-            zoomControl: false, // Disable zoom control buttons
             scrollWheelZoom: false, // Disable zoom by scrolling
             doubleClickZoom: false, // Disable zoom by double-clicking
             boxZoom: false, // Disable zoom by dragging a box
             touchZoom: false // Disable zoom by touch
         }).setView([latitude, longitude], zoomLevel);
+
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
-    } else {
-        map.setView([latitude, longitude], zoomLevel);
-    }
 
-    if (!marker) {
         marker = L.marker([latitude, longitude]).addTo(map);
+
+        // Ensure map size is correctly calculated
+        setTimeout(() => {
+            map.invalidateSize();
+        }, 0);
     } else {
         marker.setLatLng([latitude, longitude]);
     }
@@ -220,8 +221,7 @@ async function updateLocation(position) {
 
     try {
         const token = localStorage.getItem('token');
-//        const response = await fetch('http://localhost:8080/api/location/get-live', {
-        const response = await fetch('https://security-service-f8c1.onrender.com/api/location/get-live', {
+        const response = await fetch('http://localhost:8080/api/location/get-live', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -232,7 +232,13 @@ async function updateLocation(position) {
 
         const data = await response.text();
         // document.getElementById('status').innerHTML = data;
-        initMap(latitude, longitude);
+
+        // Only update the marker position, without resetting the map view
+        if (marker) {
+            marker.setLatLng([latitude, longitude]);
+        } else {
+            initMap(latitude, longitude);
+        }
 
         // Call the function again to continue tracking
         sendLocation();
@@ -242,48 +248,71 @@ async function updateLocation(position) {
 }
 
 function sendLocation() {
-    if (navigator.permissions) {
-        navigator.permissions.query({ name: 'geolocation' }).then(function (permissionStatus) {
-            if (permissionStatus.state === 'granted') {
-                // If permission is already granted, get the location
-                navigator.geolocation.getCurrentPosition(updateLocation, showError, {
-                    maximumAge: 0,
-                    timeout: 10000,
-                    enableHighAccuracy: true
-                });
-            } else if (permissionStatus.state === 'prompt') {
-                // Request permission if not already granted
+    setTimeout(() => {
+        if (navigator.permissions) {
+            navigator.permissions.query({ name: 'geolocation' }).then(function (permissionStatus) {
+                if (permissionStatus.state === 'granted') {
+                    // If permission is already granted, get the location
+                    navigator.geolocation.getCurrentPosition(updateLocation, showError, {
+                        maximumAge: 0,
+                        timeout: 10000,
+                        enableHighAccuracy: true
+                    });
+                } else if (permissionStatus.state === 'prompt') {
+                    // Request permission if not already granted
+                    navigator.geolocation.getCurrentPosition(updateLocation, showError, {
+                        maximumAge: 0,
+                        timeout: 10000,
+                        enableHighAccuracy: true
+                    });
+                } else {
+                    document.getElementById('status').innerHTML = "Geolocation permission is denied.";
+                }
+
+                // Listen for changes to the permission state
+                permissionStatus.onchange = function () {
+                    if (permissionStatus.state === 'granted') {
+                        navigator.geolocation.getCurrentPosition(updateLocation, showError, {
+                            maximumAge: 0,
+                            timeout: 10000,
+                            enableHighAccuracy: true
+                        });
+                    }
+                };
+            });
+        } else {
+            // Fallback for browsers that do not support the permissions API
+            if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(updateLocation, showError, {
                     maximumAge: 0,
                     timeout: 10000,
                     enableHighAccuracy: true
                 });
             } else {
-                document.getElementById('status').innerHTML = "Geolocation permission is denied.";
+                document.getElementById('status').innerHTML = "Geolocation is not supported by this browser.";
             }
-
-            // Listen for changes to the permission state
-            permissionStatus.onchange = function () {
-                if (permissionStatus.state === 'granted') {
-                    navigator.geolocation.getCurrentPosition(updateLocation, showError, {
-                        maximumAge: 0,
-                        timeout: 10000,
-                        enableHighAccuracy: true
-                    });
-                }
-            };
-        });
-    } else {
-        // Fallback for browsers that do not support the permissions API
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(updateLocation, showError, {
-                maximumAge: 0,
-                timeout: 10000,
-                enableHighAccuracy: true
-            });
-        } else {
-            document.getElementById('status').innerHTML = "Geolocation is not supported by this browser.";
         }
+    }, 5000); // 5 seconds delay before requesting location
+}
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    document.getElementById('new-folder').addEventListener('click', sendLocation);
+});
+
+function showError(error) {
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            document.getElementById('status').innerHTML = "User denied the request for Geolocation.";
+            break;
+        case error.POSITION_UNAVAILABLE:
+            document.getElementById('status').innerHTML = "Location information is unavailable.";
+            break;
+        case error.TIMEOUT:
+            document.getElementById('status').innerHTML = "The request to get user location timed out.";
+            break;
+        case error.UNKNOWN_ERROR:
+            document.getElementById('status').innerHTML = "An unknown error occurred.";
+            break;
     }
 }
 
@@ -312,8 +341,8 @@ initMap(20.5937, 78.9629); // Coordinates for India
 function loadFiles() {
     showLoadingBar();
     const token = localStorage.getItem('token');
-//    fetch('http://localhost:8080/api/files/view-all', { // Replace with your actual endpoint
-    fetch('https://security-service-f8c1.onrender.com/api/files/view-all', { // Replace with your actual endpoint
+    fetch('http://localhost:8080/api/files/view-all', { // Replace with your actual endpoint
+//    fetch('https://security-service-f8c1.onrender.com/api/files/view-all', { // Replace with your actual endpoint
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -377,8 +406,8 @@ window.addEventListener('load', function() {
 function deleteFile(fileId) {
     showLoadingBar();
     const token = localStorage.getItem('token');
-//    fetch(`http://localhost:8080/api/files/delete/${fileId}`, { // Replace with your actual endpoint
-    fetch(`https://security-service-f8c1.onrender.com/api/files/delete/${fileId}`, { // Replace with your actual endpoint
+    fetch(`http://localhost:8080/api/files/delete/${fileId}`, { // Replace with your actual endpoint
+//    fetch(`https://security-service-f8c1.onrender.com/api/files/delete/${fileId}`, { // Replace with your actual endpoint
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${token}`
