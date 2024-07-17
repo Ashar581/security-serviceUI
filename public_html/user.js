@@ -43,9 +43,9 @@ document.getElementById('fileUploadForm').addEventListener('submit', function(ev
 
     showLoadingBar(); // Show loading bar when form is submitted
     const token = localStorage.getItem('token');
-    fetch('http://localhost:8080/api/files/add', {
+//    fetch('http://localhost:8080/api/files/add', {
 
-//    fetch('https://security-service-f8c1.onrender.com/api/files/add', { // Replace with your actual endpoint
+    fetch('https://security-service-f8c1.onrender.com/api/files/add', { // Replace with your actual endpoint
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`
@@ -126,8 +126,8 @@ async function fetchUserName() {
     showLoadingBar();
     const token = localStorage.getItem('token');
     try {
-        const response = await fetch('http://localhost:8080/api/user/view', {
-//        const response = await fetch('https://security-service-f8c1.onrender.com/api/user/view', {
+//        const response = await fetch('http://localhost:8080/api/user/view', {
+        const response = await fetch('https://security-service-f8c1.onrender.com/api/user/view', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -221,7 +221,9 @@ async function updateLocation(position) {
 
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:8080/api/location/get-live', {
+        const response = await fetch('https://security-service-f8c1.onrender.com/api/location/get-live', {
+
+//        const response = await fetch('http://localhost:8080/api/location/get-live', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -341,8 +343,8 @@ initMap(20.5937, 78.9629); // Coordinates for India
 function loadFiles() {
     showLoadingBar();
     const token = localStorage.getItem('token');
-    fetch('http://localhost:8080/api/files/view-all', { // Replace with your actual endpoint
-//    fetch('https://security-service-f8c1.onrender.com/api/files/view-all', { // Replace with your actual endpoint
+//    fetch('http://localhost:8080/api/files/view-all', { // Replace with your actual endpoint
+    fetch('https://security-service-f8c1.onrender.com/api/files/view-all', { // Replace with your actual endpoint
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -406,8 +408,8 @@ window.addEventListener('load', function() {
 function deleteFile(fileId) {
     showLoadingBar();
     const token = localStorage.getItem('token');
-    fetch(`http://localhost:8080/api/files/delete/${fileId}`, { // Replace with your actual endpoint
-//    fetch(`https://security-service-f8c1.onrender.com/api/files/delete/${fileId}`, { // Replace with your actual endpoint
+//    fetch(`http://localhost:8080/api/files/delete/${fileId}`, { // Replace with your actual endpoint
+    fetch(`https://security-service-f8c1.onrender.com/api/files/delete/${fileId}`, { // Replace with your actual endpoint
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${token}`
