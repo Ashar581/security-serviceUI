@@ -1,0 +1,122 @@
+body {
+    margin: 0;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background-color: #adbbda;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+.profile-container {
+    display: flex;
+    flex-direction: row;
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    max-width: 900px;
+    width: 100%;
+    height: 100%;
+    padding: 0px;
+    box-sizing: border-box; 
+}
+
+.greeting-section {
+    padding: 50px;
+    background-color: #ede8f5;
+    text-align: center;
+    color: #c8b7a6;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.greeting-section img {
+    max-width: 100%;
+    height: auto;
+}
+
+.profile-section {
+    background-color: #8697c4;
+    color: white;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.avatar img {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    margin-bottom: 20px;
+    /* padding-top: 18px; */
+}
+
+.profile-details {
+    text-align: right;
+    width: 100%;
+}
+
+.profile-details .detail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.profile-details .label {
+    flex: 1;
+    text-align: left;
+    padding-right: 20px;
+    font-weight: bold;
+}
+
+.profile-details .value {
+    flex: 2;
+    text-align: left;
+}
+
+.profile-details hr {
+    border: 0;
+    height: 1px;
+    background: #ccc;
+    width: 100%;
+    margin: 0;
+}
+
+.edit-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+}
+
+.edit-icon img {
+    width: 24px;
+    height: 24px;
+}
+
+@media (max-width: 768px) {
+    .profile-container {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .greeting-section {
+        order: 2;
+        padding: 20px;
+    }
+
+    .profile-section {
+        order: 1;
+        padding: 20px;
+    }
+}
