@@ -5,7 +5,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    /* background-image: url('images/bg.png'); */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -17,7 +16,6 @@ body {
     display: flex;
     height: 100vh;
     width: 100%;
-    /* background: rgba(255, 255, 255, 0.123);  */
 }
 
 .form-container {
@@ -36,7 +34,8 @@ body {
     align-items: center;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 400px;
+    width: 90%;
+    max-width: 400px;
 }
 
 h2 {
@@ -53,11 +52,9 @@ form {
 
 label {
     margin-bottom: 5px;
-    
 }
 
 input, select {
-    
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -87,7 +84,7 @@ p {
 .popup {
     display: none;
     position: fixed;
-    top: 10%; /* Adjust this value to position the popup further down or up */
+    top: 10%;
     left: 50%;
     transform: translateX(-50%);
     background-color: red;
@@ -125,18 +122,39 @@ p {
 }
 
 #loadingBar {
-    display: none; /* Hidden by default */
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 4px;
     background-color: #3498db;
-    z-index: 1000; /* Ensure it sits above other content */
-    animation: loading 2s linear infinite; /* Simple loading animation */
+    z-index: 1000;
+    animation: loading 2s linear infinite;
 }
 
 @keyframes loading {
     0% { width: 0%; }
     100% { width: 100%; }
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+    .form-box {
+        width: 100%;
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        font-size: 13px;
+    }
+    .form-box {
+        width: 100%;
+        padding: 15px;
+    }
 }
