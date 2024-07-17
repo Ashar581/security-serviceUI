@@ -55,6 +55,8 @@ document.getElementById('fileUploadForm').addEventListener('submit', function(ev
     .then(data => {
         if (data.message.toLowerCase().includes('success')) {
             showPopup(data.message, 'success');
+    //Resetting the selected file after successful api call
+            document.getElementById('fileUploadForm').reset();
         } else {
             showPopup(data.message, 'error');
         }
@@ -66,6 +68,7 @@ document.getElementById('fileUploadForm').addEventListener('submit', function(ev
     })
     .finally(() => {
         hideLoadingBar(); // Hide loading bar when API call completes
+        loadFiles(); //calling the load file API
     });
 });
 
@@ -121,7 +124,7 @@ async function fetchUserName() {
         const data = await response.json();
 
         if (data.status) {
-            document.getElementById('welcomeMessage').textContent = `HEY, ${data.data.firstName} ${data.data.lastName}`;
+            document.getElementById('welcomeMessage').textContent = `HEY, ${data.data.firstName.toUpperCase()}`;
         } else {
             showPopup(data.message);
         }
@@ -299,19 +302,33 @@ function loadFiles() {
         if (data.status) {
             const fileList = document.getElementById('fileList');
             fileList.innerHTML = '';
-            data.data.forEach(file => {
-                const fileItem = document.createElement('div');
-                fileItem.className = 'document';
-                fileItem.innerHTML = `<div>${file.fileName}</div>`;
-                fileItem.addEventListener('click', () => viewFile(file.fileId)); // Add event listener
-                fileList.appendChild(fileItem);
-                console.log(file.fileName);
-            });
-            const showAllBtn = document.createElement('div');
-            showAllBtn.className = 'show-all';
-            showAllBtn.innerText = 'SHOW ALL';
-            showAllBtn.onclick = showAllDocuments;
-            fileList.appendChild(showAllBtn);
+            const files = data.data;
+            const initialFiles = files.slice(0, 4); // Display only the first 4 files
+
+            function renderFiles(filesToRender, showAll = true) {
+                fileList.innerHTML = ''; // Clear current files
+                filesToRender.forEach(file => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'document';
+                    fileItem.innerHTML = `<div>${file.fileName}</div>`;
+                    fileItem.addEventListener('click', () => viewFile(file.fileId)); // Add event listener
+                    fileList.appendChild(fileItem);
+                });
+
+                const toggleBtn = document.createElement('div');
+                toggleBtn.className = 'show-all';
+                toggleBtn.innerText = showAll ? 'SHOW ALL' : 'SHOW LESS';
+                toggleBtn.onclick = () => {
+                    if (showAll) {
+                        renderFiles(files, false); // Show all files
+                    } else {
+                        renderFiles(initialFiles, true); // Show initial files
+                    }
+                };
+                fileList.appendChild(toggleBtn);
+            }
+
+            renderFiles(initialFiles, true); // Initially show only the first 4 files
         } else {
             showPopup('Error: ' + data.message, 'error');
         }
@@ -325,6 +342,8 @@ function loadFiles() {
     });
 }
 
+
+//View The File
 function viewFile(fileId) {
     showLoadingBar();
     const token = localStorage.getItem('token');
@@ -353,18 +372,6 @@ function viewFile(fileId) {
         hideLoadingBar();
     });
 }
-
-
-// Function to show all documents (implement as needed)
-function showAllDocuments() {
-    // Add logic to show all documents
-}
-
-// Function to show all documents (implement as needed)
-function showAllDocuments() {
-    // Add logic to show all documents
-}
-
 // Hide the loading bar once the entire page is fully loaded
 window.addEventListener('load', function() {
     hideLoadingBar();

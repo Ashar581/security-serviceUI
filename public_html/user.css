@@ -58,6 +58,12 @@ header {
     border-radius: 10px; /* Add border radius to the header */
     margin-bottom: 20px; /* Add margin to create space below the header */
 }
+.footer {
+    text-align: center;
+    font-size: 12px;
+    color: #777;
+    margin-top: 20px
+}
 
 .menu-toggle {
     font-size: 24px;
@@ -78,17 +84,37 @@ header {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 5px 10px;
+    width: 24px; /* Adjust the size as needed */
+    height: 24px; /* Adjust the size as needed */
     background-color: red;
     color: white;
     font-weight: bold;
-    border-radius: 4px;
+    border-radius: 50%; /* This makes the button circular */
     cursor: pointer;
     text-transform: uppercase;
-    font-size: 14px; /* Adjust the size as needed */
+    font-size: 10px; /* Adjust the size as needed */
     margin-right: 10px;
+    border: none; /* Remove border if any */
+    text-align: center;
+    vertical-align: middle;
+}.emergency-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px; /* Adjust the size as needed */
+    height: 24px; /* Adjust the size as needed */
+    background-color: red;
+    color: white;
+    font-weight: bold;
+    border-radius: 50%; /* This makes the button circular */
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 10px; /* Adjust the size as needed */
+    margin-right: 10px;
+    border: 2px solid white; /* Add a circular boundary */
+    text-align: center;
+    vertical-align: middle;
 }
-
 
 
 .profile-icon {
@@ -218,6 +244,14 @@ section.active {
     margin-bottom: 10px;
     background-color: white;
 }
+.document div {
+    font-size: 14px; /* Adjust the font size as needed */
+    white-space: nowrap; /* Prevent the text from wrapping to the next line */
+    overflow: hidden; /* Hide the overflowed text */
+    text-overflow: ellipsis; /* Show ellipsis (...) for overflowed text */
+    width: 100%;
+    display: inline-block; /* Ensure the ellipsis works */
+}
 .document:hover {
     background-color: #e9e9e9;
 }
@@ -312,4 +346,23 @@ section.active {
     height: 400px;
     width: 50%;
     margin-top: 20px;
+}
+
+.custom-file-upload {
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    margin-right: 10px; /* Space between the file button and the upload button */
+    transition: background-color 0.3s ease;
+}
+
+.custom-file-upload:hover {
+    background-color: #e9e9f9;
+}
+
+#file {
+    display: none;
 }

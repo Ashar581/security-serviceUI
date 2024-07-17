@@ -13,7 +13,7 @@
         <div class="menu-toggle" onclick="openNav()"><span>&#9776;</span></div>
         <div class="welcome-message" id="welcomeMessage"></div>
         <div class="actions">
-            <div class="emergency-button">EMERGENCY</div>
+            <div class="emergency-button">SOS</div>
 
 
             <div class="profile-icon" onclick="logout()">
@@ -42,29 +42,22 @@
                 </div>
                 <div class="actions">
                     <form id="fileUploadForm">
-                        <input type="file" id="file" name="file" required>
                         <input type="hidden" id="userId" name="userId" value="1"> <!-- Replace with actual user ID -->
+                        <label for="file" class="custom-file-upload">
+                            Choose File
+                        </label>
+                        <input type="file" id="file" name="file" required>
                         <button id="new-document" type="submit">Upload</button>
                     </form>
 <!--                    <button id="new-document">+ New Document</button>-->
-                    <button id="new-folder">+ New Folder</button>
+<!--                    <button id="new-folder">+ New Folder</button>-->
                 </div>
             </div>
             
             <div class="documents-list">
                 <div class="documents-list" id="fileList">
-                    <div class="show-all" onclick="showAllDocuments()">SHOW ALL</div>
+                    <div class="show-all">SHOW ALL</div>
                 </div>
-<!--                <div class="document">DOCUMENT 1</div>
-                <div class="document">DOCUMENT 2</div>
-                <div class="document">DOCUMENT 3</div>
-                <div class="document">DOCUMENT 1</div>
-                <div class="document">DOCUMENT 2</div>
-                <div class="document">DOCUMENT 3</div>
-                <div class="document">DOCUMENT 1</div>
-                <div class="document">DOCUMENT 2</div>
-                <div class="document">DOCUMENT 3</div>
-                <div class="show-all">SHOW ALL</div>-->
             </div>
         </section>
         <section id="location-section">
@@ -84,6 +77,9 @@
     <div class="popup" id="popup">
         <span class="close-btn" id="closeBtn">&times;</span>
         <div id="popupMessage"></div>
+    </div>
+    <div class="footer">
+        <p>&copy; 2024 Securellance. All rights reserved.<br>Developer By Ashar Shahab & Neha Shaw</p>
     </div>
 
     <script src="user.js"></script>
