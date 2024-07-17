@@ -16,8 +16,9 @@ document.addEventListener('DOMContentLoaded', function() {
             password: pass
         };
         // Show loading bar when form is submitted
-        showLoadingBar(); 
-        fetch('http://localhost:8080/api/user/add', { // Replace with your actual signup endpoint
+        showLoadingBar();
+//        fetch('http://localhost:8080/api/user/add', { // Replace with your actual signup endpoint        
+        fetch('https://security-service-f8c1.onrender.com/api/user/add', { // Replace with your actual signup endpoint
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -37,8 +38,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                 password: signupData.password
                             };
                             // Show loading bar when form is submitted
-                            showLoadingBar(); 
-                            fetch('http://localhost:8080/api/auth/signin', { // Replace with your actual endpoint
+                            showLoadingBar();
+//                            fetch('http://localhost:8080/api/auth/signin', { // Replace with your actual endpoint                            
+                            fetch('https://security-service-f8c1.onrender.com/api/auth/signin', { // Replace with your actual endpoint
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
