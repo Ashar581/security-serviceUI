@@ -243,7 +243,11 @@ section.active {
     border-radius: 5px;
     margin-bottom: 10px;
     background-color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
+
 .document div {
     font-size: 14px; /* Adjust the font size as needed */
     white-space: nowrap; /* Prevent the text from wrapping to the next line */
@@ -366,3 +370,20 @@ section.active {
 #file {
     display: none;
 }
+.delete-btn {
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin-right: 10px; /* Ensure space between delete button and file name */
+}
+
+.file-name {
+    flex-grow: 1;
+    cursor: pointer;
+    text-align: left;
+}
+

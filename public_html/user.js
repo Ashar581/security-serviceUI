@@ -310,8 +310,10 @@ function loadFiles() {
                 filesToRender.forEach(file => {
                     const fileItem = document.createElement('div');
                     fileItem.className = 'document';
-                    fileItem.innerHTML = `<div>${file.fileName}</div>`;
-                    fileItem.addEventListener('click', () => viewFile(file.fileId)); // Add event listener
+                    fileItem.innerHTML = `
+                        <button class="delete-btn" onclick="deleteFile(${file.fileId})">X</button>
+                        <div class="file-name" onclick="viewFile(${file.fileId})">${file.fileName}</div>
+                    `;
                     fileList.appendChild(fileItem);
                 });
 
@@ -329,6 +331,7 @@ function loadFiles() {
             }
 
             renderFiles(initialFiles, true); // Initially show only the first 4 files
+            showPopup( data.message, 'error');
         } else {
             showPopup('Error: ' + data.message, 'error');
         }
@@ -341,14 +344,18 @@ function loadFiles() {
         hideLoadingBar();
     });
 }
+// Hide the loading bar once the entire page is fully loaded
+window.addEventListener('load', function() {
+    hideLoadingBar();
+    loadFiles();
+});
 
-
-//View The File
-function viewFile(fileId) {
+//Delete file
+function deleteFile(fileId) {
     showLoadingBar();
     const token = localStorage.getItem('token');
-    fetch(`http://localhost:8080/api/files/view/${fileId}`, { // Replace with your actual endpoint
-        method: 'GET',
+    fetch(`http://localhost:8080/api/files/delete/${fileId}`, { // Replace with your actual endpoint
+        method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -356,24 +363,17 @@ function viewFile(fileId) {
     .then(response => response.json())
     .then(data => {
         if (data.status) {
-            const byteArray = Uint8Array.from(atob(data.data.data), c => c.charCodeAt(0));
-            const blob = new Blob([byteArray], { type: data.data.fileType });
-            const url = URL.createObjectURL(blob);
-            window.open(url, '_blank');
+            loadFiles(); // Reload files after deletion
+            showPopup('File deleted successfully', 'success');
         } else {
             showPopup('Error: ' + data.message, 'error');
         }
     })
     .catch((error) => {
-        showPopup('Error viewing file', 'error');
+        showPopup('Error deleting file', 'error');
         console.error('Error:', error);
     })
     .finally(() => {
         hideLoadingBar();
     });
 }
-// Hide the loading bar once the entire page is fully loaded
-window.addEventListener('load', function() {
-    hideLoadingBar();
-    loadFiles();
-});
