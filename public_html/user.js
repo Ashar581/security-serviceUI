@@ -6,6 +6,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('location-tab').addEventListener('click', function() {
         setActiveTab('location');
+        if (!map) {
+            initMap();
+        }
+        fetchLocation(); // Call fetchLocation immediately when location tab is clicked
     });
 
     // Event listener for emergency button
@@ -27,10 +31,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Fetch user name and load files on page load
     fetchUserName();
     loadFiles();
-
-    // Start the location tracking
-    sendLocation();
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('file').addEventListener('change', showFilePopup);
+});
+
+//After file is getting selected, pop up is shown
+function showFilePopup() {
+    const fileInput = document.getElementById('file');
+    if (fileInput.files.length > 0) {
+        const fileName = fileInput.files[0].name;
+        showPopup(`Selected file: ${fileName}`, 'info'); // Using 'info' for file information
+    }
+}
+
 
 // Function to handle form submission for file upload
 document.getElementById('fileUploadForm').addEventListener('submit', function(event) {
@@ -43,9 +58,7 @@ document.getElementById('fileUploadForm').addEventListener('submit', function(ev
 
     showLoadingBar(); // Show loading bar when form is submitted
     const token = localStorage.getItem('token');
-//    fetch('http://localhost:8080/api/files/add', {
-
-    fetch('https://security-service-f8c1.onrender.com/api/files/add', { // Replace with your actual endpoint
+    fetch('http://localhost:8080/api/files/add', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`
@@ -56,7 +69,7 @@ document.getElementById('fileUploadForm').addEventListener('submit', function(ev
     .then(data => {
         if (data.message.toLowerCase().includes('success')) {
             showPopup(data.message, 'success');
-    //Resetting the selected file after successful api call
+            // Resetting the selected file after successful api call
             document.getElementById('fileUploadForm').reset();
         } else {
             showPopup(data.message, 'error');
@@ -69,7 +82,7 @@ document.getElementById('fileUploadForm').addEventListener('submit', function(ev
     })
     .finally(() => {
         hideLoadingBar(); // Hide loading bar when API call completes
-        loadFiles(); //calling the load file API
+        loadFiles(); // Calling the load file API
     });
 });
 
@@ -120,14 +133,12 @@ window.onclick = function(event) {
     }
 }
 
-
 // Fetch user name
 async function fetchUserName() {
     showLoadingBar();
     const token = localStorage.getItem('token');
     try {
-//        const response = await fetch('http://localhost:8080/api/user/view', {
-        const response = await fetch('https://security-service-f8c1.onrender.com/api/user/view', {
+        const response = await fetch('http://localhost:8080/api/user/view', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -136,8 +147,8 @@ async function fetchUserName() {
         });
 
         if (!response.ok) {
-            if(response.status === 401){
-                showPopup("Unauthorized user");
+            if (response.status === 401) {
+                showPopup("Unauthorized user",'error');
                 logout();
             }
         }
@@ -147,7 +158,7 @@ async function fetchUserName() {
         if (data.status) {
             document.getElementById('welcomeMessage').textContent = `HEY, ${data.data.firstName.toUpperCase()}`;
         } else {
-            showPopup(data.message);
+            showPopup(data.message,'error');
         }
     } catch (error) {
         console.error('There has been a problem with your fetch operation:', error);
@@ -157,10 +168,21 @@ async function fetchUserName() {
 }
 
 // Show popup message
-function showPopup(message) {
+function showPopup(message, type) {
     const popup = document.getElementById('popup');
     const popupMessage = document.getElementById('popupMessage');
+    
     popupMessage.textContent = message;
+    
+    // Set the background color based on the type of message
+    if (type === 'success') {
+        popup.style.backgroundColor = 'green'; // Green for success
+    } else if (type === 'error') {
+        popup.style.backgroundColor = 'red'; // Red for error
+    } else {
+        popup.style.backgroundColor = 'gray'; // Default color if needed
+    }
+    
     popup.classList.add('show');
     setTimeout(() => {
         popup.classList.add('hide');
@@ -180,171 +202,142 @@ function hideLoadingBar() {
     document.getElementById('loadingBar').style.display = 'none';
 }
 
-// Map functions
+// Map Function
 let map;
-let marker;
+let markers = {}; // Object to store markers by user ID
+let selectedMarker = null; // To store the currently selected marker
+const defaultLocation = [20.5937, 78.9629]; // Default coordinates (India)
 
-function initMap(latitude, longitude) {
-    const zoomLevel = 16; // Set your desired zoom level
+function initMap() {
+    map = L.map('map', {
+        scrollWheelZoom: false, // Disable zoom by scrolling
+        doubleClickZoom: false, // Disable zoom by double-clicking
+        boxZoom: false, // Disable zoom by dragging a box
+        touchZoom: false // Disable zoom by touch
+    }).setView(defaultLocation, 5); // Set initial view to default location with a default zoom level
 
-    if (!map) {
-        map = L.map('map', {
-            scrollWheelZoom: false, // Disable zoom by scrolling
-            doubleClickZoom: false, // Disable zoom by double-clicking
-            boxZoom: false, // Disable zoom by dragging a box
-            touchZoom: false // Disable zoom by touch
-        }).setView([latitude, longitude], zoomLevel);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-
-        marker = L.marker([latitude, longitude]).addTo(map);
-
-        // Ensure map size is correctly calculated
-        setTimeout(() => {
-            map.invalidateSize();
-        }, 0);
-    } else {
-        marker.setLatLng([latitude, longitude]);
-    }
+    // Ensure map size is correctly calculated
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 500); // Small delay to ensure the map container is fully rendered
 }
 
-async function updateLocation(position) {
-    const latitude = position.coords.latitude;
-    const longitude = position.coords.longitude;
-
-    const location = {
-        latitude: latitude,
-        longitude: longitude
-    };
-
+async function fetchLocation(retryDelay = 5000) {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch('https://security-service-f8c1.onrender.com/api/location/get-live', {
-
-//        const response = await fetch('http://localhost:8080/api/location/get-live', {
-            method: 'PUT',
+        const response = await fetch('http://localhost:8080/api/location/get-location', {
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(location)
+            }
         });
 
-        const data = await response.text();
-        // document.getElementById('status').innerHTML = data;
-
-        // Only update the marker position, without resetting the map view
-        if (marker) {
-            marker.setLatLng([latitude, longitude]);
-        } else {
-            initMap(latitude, longitude);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
         }
 
-        // Call the function again to continue tracking
-        sendLocation();
+        const data = await response.json();
+        console.log('Location data:', data); // Debugging: Log location data
+
+        if (data.status && data.data.length > 0) {
+            let firstMarkerPosition = null;
+
+            data.data.forEach(user => {
+                const { latitude, longitude, name, email } = user;
+                const userId = email; // Assuming email is unique for each user
+
+                if (markers[userId]) {
+                    markers[userId].setLatLng([latitude, longitude]);
+                    if (!selectedMarker || markers[userId] === selectedMarker) {
+                        markers[userId].setPopupContent(name).openPopup();
+                    } else {
+                        markers[userId].setPopupContent('').closePopup();
+                    }
+                } else {
+                    markers[userId] = L.marker([latitude, longitude])
+                        .addTo(map)
+                        .bindPopup(name);
+
+                    markers[userId].on('click', function () {
+                        selectedMarker = markers[userId];
+                        updateMarkers();
+                        map.setView(markers[userId].getLatLng(), map.getZoom());
+                    });
+
+                    if (!firstMarkerPosition) {
+                        firstMarkerPosition = [latitude, longitude];
+                    }
+                }
+            });
+
+            if (!selectedMarker) {
+                if (Object.keys(markers).length > 0) {
+                    const group = L.featureGroup(Object.values(markers));
+                    map.fitBounds(group.getBounds());
+                } else if (firstMarkerPosition) {
+                    map.setView(firstMarkerPosition, 15);
+                }
+            }
+        } else {
+            document.getElementById('status').innerHTML = 'No location data available';
+        }
+
+        // Reset the retry delay after a successful call
+        setTimeout(fetchLocation, 5000); // 5 seconds delay before the next location fetch
     } catch (error) {
         document.getElementById('status').innerHTML = 'Error: ' + error;
+        const nextRetryDelay = Math.min(retryDelay * 2, 30000); // Double the delay, max 30 seconds
+        setTimeout(() => fetchLocation(nextRetryDelay), nextRetryDelay); // Retry with an increased delay
     }
 }
 
-function sendLocation() {
-    setTimeout(() => {
-        if (navigator.permissions) {
-            navigator.permissions.query({ name: 'geolocation' }).then(function (permissionStatus) {
-                if (permissionStatus.state === 'granted') {
-                    // If permission is already granted, get the location
-                    navigator.geolocation.getCurrentPosition(updateLocation, showError, {
-                        maximumAge: 0,
-                        timeout: 10000,
-                        enableHighAccuracy: true
-                    });
-                } else if (permissionStatus.state === 'prompt') {
-                    // Request permission if not already granted
-                    navigator.geolocation.getCurrentPosition(updateLocation, showError, {
-                        maximumAge: 0,
-                        timeout: 10000,
-                        enableHighAccuracy: true
-                    });
-                } else {
-                    document.getElementById('status').innerHTML = "Geolocation permission is denied.";
-                }
 
-                // Listen for changes to the permission state
-                permissionStatus.onchange = function () {
-                    if (permissionStatus.state === 'granted') {
-                        navigator.geolocation.getCurrentPosition(updateLocation, showError, {
-                            maximumAge: 0,
-                            timeout: 10000,
-                            enableHighAccuracy: true
-                        });
-                    }
-                };
-            });
+function updateMarkers() {
+    Object.keys(markers).forEach(userId => {
+        if (!selectedMarker) {
+            markers[userId].bindPopup(userId).openPopup();
+        } else if (markers[userId] === selectedMarker) {
+            markers[userId].getPopup().setContent(userId).openPopup();
         } else {
-            // Fallback for browsers that do not support the permissions API
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(updateLocation, showError, {
-                    maximumAge: 0,
-                    timeout: 10000,
-                    enableHighAccuracy: true
-                });
-            } else {
-                document.getElementById('status').innerHTML = "Geolocation is not supported by this browser.";
-            }
+            markers[userId].getPopup().setContent('').closePopup();
         }
-    }, 5000); // 5 seconds delay before requesting location
+    });
 }
 
-document.addEventListener('DOMContentLoaded', (event) => {
-    document.getElementById('new-folder').addEventListener('click', sendLocation);
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize map when the location tab is clicked
+    document.getElementById('location-tab').addEventListener('click', () => {
+        if (!map) {
+            initMap();
+        } else {
+            map.invalidateSize();
+        }
+        fetchLocation(); // Call fetchLocation immediately when the location tab is clicked
+    });
+
+    // Fetch location data when the page is loaded
+    fetchLocation();
 });
 
-function showError(error) {
-    switch(error.code) {
-        case error.PERMISSION_DENIED:
-            document.getElementById('status').innerHTML = "User denied the request for Geolocation.";
-            break;
-        case error.POSITION_UNAVAILABLE:
-            document.getElementById('status').innerHTML = "Location information is unavailable.";
-            break;
-        case error.TIMEOUT:
-            document.getElementById('status').innerHTML = "The request to get user location timed out.";
-            break;
-        case error.UNKNOWN_ERROR:
-            document.getElementById('status').innerHTML = "An unknown error occurred.";
-            break;
+// Handle window resize to ensure map resizes correctly
+window.addEventListener('resize', () => {
+    if (map) {
+        setTimeout(() => {
+            map.invalidateSize();
+        }, 500); // Ensure delay for better accuracy
     }
-}
-
-// Function to show error messages if location fetching fails
-function showError(error) {
-    switch (error.code) {
-        case error.PERMISSION_DENIED:
-            document.getElementById('status').innerHTML = "User denied the request for Geolocation.";
-            break;
-        case error.POSITION_UNAVAILABLE:
-            document.getElementById('status').innerHTML = "Location information is unavailable.";
-            break;
-        case error.TIMEOUT:
-            document.getElementById('status').innerHTML = "The request to get user location timed out.";
-            break;
-        case error.UNKNOWN_ERROR:
-            document.getElementById('status').innerHTML = "An unknown error occurred.";
-            break;
-    }
-}
-
-// Initialize map with a default location
-initMap(20.5937, 78.9629); // Coordinates for India
+});
 
 // Function to load files from the backend
 function loadFiles() {
     showLoadingBar();
     const token = localStorage.getItem('token');
-//    fetch('http://localhost:8080/api/files/view-all', { // Replace with your actual endpoint
-    fetch('https://security-service-f8c1.onrender.com/api/files/view-all', { // Replace with your actual endpoint
+    fetch('http://localhost:8080/api/files/view-all', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -385,7 +378,7 @@ function loadFiles() {
             }
 
             renderFiles(initialFiles, true); // Initially show only the first 4 files
-            showPopup( data.message, 'error');
+            showPopup(data.message, 'success');
         } else {
             showPopup('Error: ' + data.message, 'error');
         }
@@ -398,18 +391,17 @@ function loadFiles() {
         hideLoadingBar();
     });
 }
+
 // Hide the loading bar once the entire page is fully loaded
 window.addEventListener('load', function() {
     hideLoadingBar();
-    loadFiles();
 });
 
-//Delete file
+// Delete file
 function deleteFile(fileId) {
     showLoadingBar();
     const token = localStorage.getItem('token');
-//    fetch(`http://localhost:8080/api/files/delete/${fileId}`, { // Replace with your actual endpoint
-    fetch(`https://security-service-f8c1.onrender.com/api/files/delete/${fileId}`, { // Replace with your actual endpoint
+    fetch(`http://localhost:8080/api/files/delete/${fileId}`, {
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${token}`
