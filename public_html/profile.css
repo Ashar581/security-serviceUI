@@ -10,6 +10,21 @@ body {
     box-sizing: border-box;
 }
 
+.back-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.back-btn img {
+    width: 30px;
+    height: 30px;
+}
+
 .profile-container {
     display: flex;
     flex-direction: row;
