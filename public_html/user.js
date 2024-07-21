@@ -58,8 +58,8 @@ document.getElementById('fileUploadForm').addEventListener('submit', function(ev
 
     showLoadingBar(); // Show loading bar when form is submitted
     const token = localStorage.getItem('token');
-    fetch('https://security-service-f8c1.onrender.com/api/files/add', {    
-//    fetch('http://localhost:8080/api/files/add', {
+//    fetch('https://security-service-f8c1.onrender.com/api/files/add', {    
+    fetch('http://localhost:8080/api/files/add', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`
@@ -138,36 +138,46 @@ window.onclick = function(event) {
 async function fetchUserName() {
     showLoadingBar();
     const token = localStorage.getItem('token');
-    try {
-        const response = await fetch('https://security-service-f8c1.onrender.com/api/user/view', {        
-//        const response = await fetch('http://localhost:8080/api/user/view', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
+    if(localStorage.getItem('fname')===null){
+        try {
+//          const response = await fetch('https://security-service-f8c1.onrender.com/api/user/view', {        
+            const response = await fetch('http://localhost:8080/api/user/view', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
 
-        if (!response.ok) {
-            if (response.status === 401) {
-                showPopup("Unauthorized user",'error');
+            if (!response.ok) {
+                if (response.status === 401) {
+                    showPopup("Unauthorized user",'error');
                 logout();
+                }
             }
-        }
 
-        const data = await response.json();
+            const data = await response.json();
 
-        if (data.status) {
-            document.getElementById('welcomeMessage').textContent = `HEY, ${data.data.firstName.toUpperCase()}`;
-            if(data.data.live){
+            if (data.status) {
+                document.getElementById('welcomeMessage').textContent = `HEY, ${data.data.firstName.toUpperCase()}`;
+                localStorage.setItem('fname',data.data.firstName);
+                localStorage.setItem('name',data.data.firstName + ' ' + data.data.lastName);
+                localStorage.setItem('phone', data.data.phoneNumber);
+                localStorage.setItem('email',data.data.email);
+                localStorage.setItem('isLive',data.data.isLive);
+                if(data.data.live){
                 getCurrentLocation();
+                }
+            } else {
+                showPopup(data.message,'error');
             }
-        } else {
-            showPopup(data.message,'error');
-        }
-    } catch (error) {
+        } catch (error) {
         console.error('There has been a problem with your fetch operation:', error);
-    } finally {
+        } finally {
+            hideLoadingBar();
+        }
+    }else{
+        document.getElementById('welcomeMessage').textContent = `HEY, ${localStorage.getItem('fname').toUpperCase()}`;
         hideLoadingBar();
     }
 }
@@ -234,8 +244,8 @@ function initMap() {
 async function fetchLocation(retryDelay = 5000) {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch('https://security-service-f8c1.onrender.com/api/location/get-location', {        
-//        const response = await fetch('http://localhost:8080/api/location/get-location', {
+//        const response = await fetch('https://security-service-f8c1.onrender.com/api/location/get-location', {        
+        const response = await fetch('http://localhost:8080/api/location/get-location', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -343,8 +353,8 @@ window.addEventListener('resize', () => {
 function loadFiles() {
     showLoadingBar();
     const token = localStorage.getItem('token');
-    fetch('https://security-service-f8c1.onrender.com/api/files/view-all', {
-//    fetch('http://localhost:8080/api/files/view-all', {
+//    fetch('https://security-service-f8c1.onrender.com/api/files/view-all', {
+    fetch('http://localhost:8080/api/files/view-all', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -408,8 +418,8 @@ window.addEventListener('load', function() {
 function deleteFile(fileId) {
     showLoadingBar();
     const token = localStorage.getItem('token');
-    fetch(`https://security-service-f8c1.onrender.com/api/files/delete/${fileId}`, {
-//    fetch(`http://localhost:8080/api/files/delete/${fileId}`, {
+//    fetch(`https://security-service-f8c1.onrender.com/api/files/delete/${fileId}`, {
+    fetch(`http://localhost:8080/api/files/delete/${fileId}`, {
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${token}`
@@ -459,8 +469,8 @@ async function sendLocationToBackend(latitude, longitude) {
     };
 
     try {
-        const response = await fetch('https://security-service-f8c1.onrender.com/api/location/get-live', {
-//        const response = await fetch('http://localhost:8080/api/location/get-live', {
+//        const response = await fetch('https://security-service-f8c1.onrender.com/api/location/get-live', {
+        const response = await fetch('http://localhost:8080/api/location/get-live', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
