@@ -58,8 +58,8 @@ document.getElementById('fileUploadForm').addEventListener('submit', function(ev
 
     showLoadingBar(); // Show loading bar when form is submitted
     const token = localStorage.getItem('token');
-    fetch('https://security-service-f8c1.onrender.com/api/files/add', {    
-//    fetch('http://localhost:8080/api/files/add', {
+//    fetch('https://security-service-f8c1.onrender.com/api/files/add', {    
+    fetch('http://localhost:8080/api/files/add', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`
@@ -139,8 +139,8 @@ async function fetchUserName() {
     showLoadingBar();
     const token = localStorage.getItem('token');
     try {
-        const response = await fetch('https://security-service-f8c1.onrender.com/api/user/view', {        
-//        const response = await fetch('http://localhost:8080/api/user/view', {
+//        const response = await fetch('https://security-service-f8c1.onrender.com/api/user/view', {        
+        const response = await fetch('http://localhost:8080/api/user/view', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -159,6 +159,9 @@ async function fetchUserName() {
 
         if (data.status) {
             document.getElementById('welcomeMessage').textContent = `HEY, ${data.data.firstName.toUpperCase()}`;
+            if(data.data.live){
+                getCurrentLocation();
+            }
         } else {
             showPopup(data.message,'error');
         }
@@ -231,8 +234,8 @@ function initMap() {
 async function fetchLocation(retryDelay = 5000) {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch('https://security-service-f8c1.onrender.com/api/location/get-location', {        
-//        const response = await fetch('http://localhost:8080/api/location/get-location', {
+//        const response = await fetch('https://security-service-f8c1.onrender.com/api/location/get-location', {        
+        const response = await fetch('http://localhost:8080/api/location/get-location', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -340,8 +343,8 @@ window.addEventListener('resize', () => {
 function loadFiles() {
     showLoadingBar();
     const token = localStorage.getItem('token');
-    fetch('https://security-service-f8c1.onrender.com/api/files/view-all', {
-//    fetch('http://localhost:8080/api/files/view-all', {
+//    fetch('https://security-service-f8c1.onrender.com/api/files/view-all', {
+    fetch('http://localhost:8080/api/files/view-all', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -405,8 +408,8 @@ window.addEventListener('load', function() {
 function deleteFile(fileId) {
     showLoadingBar();
     const token = localStorage.getItem('token');
-    fetch(`https://security-service-f8c1.onrender.com/api/files/delete/${fileId}`, {
-//    fetch(`http://localhost:8080/api/files/delete/${fileId}`, {
+//    fetch(`https://security-service-f8c1.onrender.com/api/files/delete/${fileId}`, {
+    fetch(`http://localhost:8080/api/files/delete/${fileId}`, {
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${token}`
@@ -429,3 +432,55 @@ function deleteFile(fileId) {
         hideLoadingBar();
     });
 }
+
+//Fetching live location
+async function getCurrentLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async (position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            console.log('Current Location:', { latitude, longitude });
+
+            await sendLocationToBackend(latitude, longitude);
+        }, (error) => {
+            console.error('Error getting location:', error.message);
+            // Handle errors here (e.g., user denied location access)
+        });
+    } else {
+        console.error('Geolocation is not supported by this browser.');
+    }
+}
+
+async function sendLocationToBackend(latitude, longitude) {
+    const token = localStorage.getItem('token');
+    const location = {
+        latitude: latitude,
+        longitude: longitude
+    };
+
+    try {
+        const response = await fetch('http://localhost:8080/api/location/get-live', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(location)
+        });
+
+        const data = await response.json();
+        console.log('Live Location Update Response:', data); // Debugging
+
+        if (data.status) {
+            getCurrentLocation();
+            console.log('Location updated successfully');
+        } else {
+            console.error('Error updating location:', data.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showPopup('Live Location Stopped','error')
+    }
+}
+
+
