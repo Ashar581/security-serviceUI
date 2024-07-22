@@ -20,11 +20,11 @@ function hideLoading() {
 
 function loadProfile() {
     showLoading();
-    const name = localStorage.getItem('name');
-    const email = localStorage.getItem('email');
-    const contact = localStorage.getItem('phone');
-    const homeLocation = localStorage.getItem('home-location');
-    const officeLocation = localStorage.getItem('office-location');
+    const name = localStorage.getItem('name') || '';
+    const email = localStorage.getItem('email') || '';
+    const contact = localStorage.getItem('phone') || '';
+    const homeLocation = localStorage.getItem('home-location') || '';
+    const officeLocation = localStorage.getItem('office-location') || '';
 
     document.getElementById('name').value = name;
     document.getElementById('email').value = email;
@@ -42,7 +42,7 @@ function loadProfile() {
     .then(response => response.json())
     .then(data => {
         hideLoading();
-        if (data.status && data.data.data) {
+        if (data.status && data.data && data.data.data) {
             const imageUrl = 'data:image/jpeg;base64,' + data.data.data;
             document.getElementById('profile-picture').src = imageUrl;
         } else {
@@ -169,4 +169,20 @@ function showPopup(message, type) {
 function hidePopup() {
     const popup = document.getElementById('popup-message');
     popup.style.display = 'none';
+}
+
+function enableEditing() {
+    document.getElementById('name').disabled = false;
+    document.getElementById('contact').disabled = false;
+    document.getElementById('home-location').disabled = false;
+    document.getElementById('office-location').disabled = false;
+    document.getElementById('save-button').style.display = 'block';
+}
+
+function disableEditing() {
+    document.getElementById('name').disabled = true;
+    document.getElementById('contact').disabled = true;
+    document.getElementById('home-location').disabled = true;
+    document.getElementById('office-location').disabled = true;
+    document.getElementById('save-button').style.display = 'none';
 }
