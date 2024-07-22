@@ -58,7 +58,10 @@ function loadProfile() {
 function saveProfile() {
     showLoading();
     const name = document.getElementById('name').value;
-    const contact = document.getElementById('contact').value;
+    const index = name.indexOf(" ");
+    const lastName = name.substring(index);
+    const firstName = name.substring(0,index);
+    const phoneNumber = document.getElementById('contact').value;
     const homeLocation = document.getElementById('home-location').value;
     const officeLocation = document.getElementById('office-location').value;
 
@@ -70,8 +73,9 @@ function saveProfile() {
             'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-            name,
-            contact,
+            lastName,
+            firstName,
+            phoneNumber,
             homeLocation,
             officeLocation
         })
@@ -81,7 +85,7 @@ function saveProfile() {
         hideLoading();
         if (data.status) {
             localStorage.setItem('name', name);
-            localStorage.setItem('phone', contact);
+            localStorage.setItem('phone', phoneNumber);
             localStorage.setItem('home-location', homeLocation);
             localStorage.setItem('office-location', officeLocation);
             showPopup('Profile updated successfully!', 'success');
@@ -172,10 +176,10 @@ function hidePopup() {
 }
 
 function enableEditing() {
-    document.getElementById('name').disabled = false;
-    document.getElementById('contact').disabled = false;
-    document.getElementById('home-location').disabled = false;
-    document.getElementById('office-location').disabled = false;
+    document.getElementById('name').readOnly = false;
+    document.getElementById('contact').readOnly = false;
+    document.getElementById('home-location').readOnly = false;
+    document.getElementById('office-location').readOnly = false;
     document.getElementById('save-button').style.display = 'block';
 }
 

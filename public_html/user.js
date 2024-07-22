@@ -122,7 +122,7 @@ function closeLogoutConfirmation() {
 // Logout function
 function logout() {
     showLoadingBar();
-    localStorage.removeItem('token');
+    localStorage.clear();
     window.location.href = "login.html";
 }
 
@@ -493,5 +493,52 @@ async function sendLocationToBackend(latitude, longitude) {
         showPopup('Live Location Stopped','error')
     }
 }
+// Function to view file content
+function viewFile(fileId, fileName) {
+    const token = localStorage.getItem('token');
+//    fetch(`https://security-service-f8c1.onrender.com/api/files/view/${fileId}`, {
+    fetch(`http://localhost:8080/api/files/view/${fileId}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status) {
+            const fileContentPopup = document.getElementById('fileContentPopup');
+            const fileContent = document.getElementById('fileContent');
+            const { fileType, data: fileData } = data.data;
 
+            // Display file content based on type
+            if (fileType === 'application/pdf') {
+                fileContent.innerHTML = `<iframe src="data:application/pdf;base64,${fileData}" width="100%" height="500px" style="border: none;"></iframe>`;
+            } else if (fileType === 'text/plain') {
+                fileContent.textContent = atob(fileData); // Decode base64 encoded file data for text files
+            } else {
+                fileContent.textContent = `Unsupported file type: ${fileType}`;
+            }
+
+            document.getElementById('fileContentPopup').classList.add('show');
+            document.getElementById('fileContentPopup').classList.remove('hide');
+            document.getElementById('fileContentPopup').style.display = 'block'; // Ensure popup is displayed
+        } else {
+            showPopup('Error: ' + data.message, 'error');
+        }
+    })
+    .catch((error) => {
+        showPopup('Error fetching file content', 'error');
+        console.error('Error:', error);
+    });
+}
+
+// Event listener for close button on file content popup
+document.getElementById('closeFileContentBtn').addEventListener('click', () => {
+    const fileContentPopup = document.getElementById('fileContentPopup');
+    fileContentPopup.classList.add('hide');
+    fileContentPopup.classList.remove('show');
+    setTimeout(() => {
+        fileContentPopup.style.display = 'none';
+    }, 500); // Sync with the fade-out transition duration
+});
 
