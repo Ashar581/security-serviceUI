@@ -31,6 +31,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Fetch user name and load files on page load
     fetchUserName();
     loadFiles();
+    //if isLive is true then keep sending the current location.
+    if(localStorage.getItem('isLive')==='true'){
+        console.log("inside get location");
+        getCurrentLocation();
+    }
 });
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -68,7 +73,7 @@ document.getElementById('fileUploadForm').addEventListener('submit', function(ev
     })
     .then(response => response.json())
     .then(data => {
-        if (data.message.toLowerCase().includes('success')) {
+        if (data.status===true) {
             showPopup(data.message, 'success');
             // Resetting the selected file after successful api call
             document.getElementById('fileUploadForm').reset();
@@ -136,10 +141,10 @@ window.onclick = function(event) {
 
 // Fetch user name
 async function fetchUserName() {
-    showLoadingBar();
     const token = localStorage.getItem('token');
     if(localStorage.getItem('fname')===null){
         try {
+            showLoadingBar();
 //          const response = await fetch('https://security-service-f8c1.onrender.com/api/user/view', {        
             const response = await fetch('http://localhost:8080/api/user/view', {
                 method: 'GET',
@@ -160,14 +165,6 @@ async function fetchUserName() {
 
             if (data.status) {
                 document.getElementById('welcomeMessage').textContent = `HEY, ${data.data.firstName.toUpperCase()}`;
-                localStorage.setItem('fname',data.data.firstName);
-                localStorage.setItem('name',data.data.firstName + ' ' + data.data.lastName);
-                localStorage.setItem('phone', data.data.phoneNumber);
-                localStorage.setItem('email',data.data.email);
-                localStorage.setItem('isLive',data.data.isLive);
-                if(data.data.live){
-                getCurrentLocation();
-                }
             } else {
                 showPopup(data.message,'error');
             }
@@ -178,7 +175,6 @@ async function fetchUserName() {
         }
     }else{
         document.getElementById('welcomeMessage').textContent = `HEY, ${localStorage.getItem('fname').toUpperCase()}`;
-        hideLoadingBar();
     }
 }
 
@@ -188,8 +184,7 @@ function showPopup(message, type) {
     const popupMessage = document.getElementById('popupMessage');
     
     popupMessage.textContent = message;
-    
-    // Set the background color based on the type of message
+
     if (type === 'success') {
         popup.style.backgroundColor = 'green'; // Green for success
     } else if (type === 'error') {
@@ -197,12 +192,16 @@ function showPopup(message, type) {
     } else {
         popup.style.backgroundColor = 'gray'; // Default color if needed
     }
-    
+    // Ensure the popup is shown
+    popup.style.display = 'block';
     popup.classList.add('show');
+    popup.classList.remove('hide');
+
     setTimeout(() => {
         popup.classList.add('hide');
         popup.classList.remove('show');
     }, 3000);
+    
     setTimeout(() => {
         popup.style.display = 'none';
     }, 3500);
@@ -210,12 +209,18 @@ function showPopup(message, type) {
 
 // Show/hide loading bar
 function showLoadingBar() {
+    console.log('Showing loading bar'); // Debugging line
     document.getElementById('loadingBar').style.display = 'block';
 }
 
+
 function hideLoadingBar() {
-    document.getElementById('loadingBar').style.display = 'none';
+    console.log('Hiding loading bar');
+    setTimeout(() => {
+        document.getElementById('loadingBar').style.display = 'none';
+    }, 100); // Small delay for smoother transition
 }
+
 
 // Map Function
 let map;
@@ -306,7 +311,6 @@ async function fetchLocation(retryDelay = 5000) {
         // Reset the retry delay after a successful call
         setTimeout(fetchLocation, 5000); // 5 seconds delay before the next location fetch
     } catch (error) {
-        document.getElementById('status').innerHTML = 'Error: ' + error;
         const nextRetryDelay = Math.min(retryDelay * 2, 30000); // Double the delay, max 30 seconds
         setTimeout(() => fetchLocation(nextRetryDelay), nextRetryDelay); // Retry with an increased delay
     }
@@ -409,10 +413,10 @@ function loadFiles() {
     });
 }
 
-// Hide the loading bar once the entire page is fully loaded
-window.addEventListener('load', function() {
-    hideLoadingBar();
-});
+//// Hide the loading bar once the entire page is fully loaded
+//window.addEventListener('load', function() {
+//    hideLoadingBar();
+//});
 
 // Delete file
 function deleteFile(fileId) {
@@ -453,8 +457,8 @@ async function getCurrentLocation() {
 
             await sendLocationToBackend(latitude, longitude);
         }, (error) => {
+            showPopup('Live Location Was Stopped','error');
             console.error('Error getting location:', error.message);
-            // Handle errors here (e.g., user denied location access)
         });
     } else {
         console.error('Geolocation is not supported by this browser.');
@@ -469,8 +473,8 @@ async function sendLocationToBackend(latitude, longitude) {
     };
 
     try {
-//        const response = await fetch('https://security-service-f8c1.onrender.com/api/location/get-live', {
-        const response = await fetch('http://localhost:8080/api/location/get-live', {
+//        const response = await fetch('https://security-service-f8c1.onrender.com/api/location/send-live', {
+        const response = await fetch('http://localhost:8080/api/location/send-live', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -490,11 +494,12 @@ async function sendLocationToBackend(latitude, longitude) {
         }
     } catch (error) {
         console.error('Error:', error);
-        showPopup('Live Location Stopped','error')
+        showPopup('Live Location Stopped','error');
     }
 }
 // Function to view file content
 function viewFile(fileId, fileName) {
+    showLoadingBar();
     const token = localStorage.getItem('token');
 //    fetch(`https://security-service-f8c1.onrender.com/api/files/view/${fileId}`, {
     fetch(`http://localhost:8080/api/files/view/${fileId}`, {
@@ -522,6 +527,7 @@ function viewFile(fileId, fileName) {
             document.getElementById('fileContentPopup').classList.add('show');
             document.getElementById('fileContentPopup').classList.remove('hide');
             document.getElementById('fileContentPopup').style.display = 'block'; // Ensure popup is displayed
+            hideLoadingBar();
         } else {
             showPopup('Error: ' + data.message, 'error');
         }
