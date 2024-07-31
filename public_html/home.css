@@ -1,0 +1,258 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #f0f4f8;
+    color: #333;
+}
+
+header {
+    background-color: #023e8a;
+    padding: 20px;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+nav ul li {
+    margin-right: 20px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+nav ul li a:hover {
+    color: #FFDD00;
+}
+
+.login-signup-btn {
+    background-color: #ECF9FF;
+    color: #5F11E8;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-right: 30px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.login-signup-btn:hover {
+    background-color: #5F11E8;
+    color: #ECF9FF;
+}
+
+.hero {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    color: #333;
+    padding: 70px 20px;
+    position: relative;
+    background-color: #e6e6e69d;
+}
+
+.hero-content {
+    z-index: 2;
+    padding-top: 30px;
+    padding-bottom: 30px; /* Reduce this value */
+    max-width: 800px;
+}
+
+
+.hero h1 {
+    font-size: 2.5em;
+    color: black;
+    margin-top: 0;
+}
+
+.hero p {
+    font-size: 1em;
+    max-width: 500px;
+}
+
+.cta-btn {
+    background-color: #5F11E8;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    transition: background-color 0.3s, color 0.3s;
+    margin-top: 15px;
+}
+
+.cta-btn:hover {
+    background-color: #ECF9FF;
+    color: #5F11E8;
+}
+
+
+.services {
+    padding: 20px;
+    background-color: #f0f4f8;
+    text-align: center;
+}
+
+.services h2 {
+    font-size: 2.1em;
+    margin-bottom: 20px;
+}
+
+.service-cards {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    padding: 20px;
+    width: 250px;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.card button {
+    background-color: #5F11E8;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.card button:hover {
+    background-color: #ECF9FF;
+    color: #5F11E8;
+}
+
+.highlight {
+    padding: 20px 20px;
+    background-color: #bfdbf7;
+    text-align: center;
+}
+
+.highlight h2 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+.highlight button {
+    background-color: #5F11E8;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.highlight button:hover {
+    background-color: #ECF9FF;
+    color: #5F11E8;
+}
+
+.testimonials {
+    padding: 50px 20px;
+    background-color: #F3F4F6;
+    text-align: center;
+}
+
+.testimonials h2 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+.testimonial-cards {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.testimonial {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    padding: 20px;
+    width: 300px;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.testimonial:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.testimonial p {
+    font-style: italic;
+}
+
+.testimonial h4 {
+    margin-top: 10px;
+    color: #5F11E8;
+}
+
+.contact {
+    padding: 50px 20px;
+    background-color: #ECF9FF;
+    text-align: center;
+}
+
+.contact h2 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+footer {
+    padding: 20px;
+    background-color: #023e8a;
+    color: white;
+    text-align: center;
+}
+
+footer .social-links {
+    margin-top: 10px;
+}
+
+footer .social-links a {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+footer .social-links a:hover {
+    color: #FFDD00;
+}
