@@ -26,6 +26,11 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
         }
         else{
             localStorage.setItem('token',data.data.token);
+            localStorage.setItem('fname',data.data.userDto.firstName);
+            localStorage.setItem('name',data.data.userDto.firstName + ' ' + data.data.userDto.lastName);
+            localStorage.setItem('phone', data.data.userDto.phoneNumber);
+            localStorage.setItem('email',data.data.userDto.email);
+            localStorage.setItem('isLive',data.data.userDto.live);
             showPopup(data.message,type = 'success');
             window.location.href = 'user.html';
         }
