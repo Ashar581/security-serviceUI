@@ -115,6 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function addLocationWatchers(emailList) {
+        showLoading();
         const token = localStorage.getItem('token');
         fetch('http://localhost:8080/api/user/add-live-listeners', {
             method: 'PUT',
@@ -127,19 +128,17 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json())
         .then(data => {
             if (data.status) {
-                responseMessage.textContent = 'Watchers added successfully!';
-                responseMessage.className = 'response-message success';
+                showPopup(data.message,'success');
                 clearAll(); // Clear everything after successful response
             } else {
-                responseMessage.textContent = 'Failed to add watchers.';
-                responseMessage.className = 'response-message error';
+                showPopup(data.message,'error');
             }
         })
         .catch(error => {
-            responseMessage.textContent = 'An error occurred.';
-            responseMessage.className = 'response-message error';
+            showPopup(error,'error');
             console.error('Error adding location watchers:', error);
-        });
+        })
+        .finally(()=>hideLoading());
     }
 
     function clearAll() {
@@ -148,4 +147,40 @@ document.addEventListener('DOMContentLoaded', () => {
         emailInput.placeholder = 'Enter email addresses'; // Restore placeholder
         responseMessage.textContent = '';
     }
+
+    // Show popup message
+    function showPopup(message, type) {
+    const popup = document.getElementById('popup');
+    const popupMessage = document.getElementById('popupMessage');
+    
+    popupMessage.textContent = message;
+
+    if (type === 'success') {
+        popup.style.backgroundColor = 'green'; // Green for success
+    } else if (type === 'error') {
+        popup.style.backgroundColor = 'red'; // Red for error
+    } else {
+        popup.style.backgroundColor = 'gray'; // Default color if needed
+    }
+    // Ensure the popup is shown
+    popup.style.display = 'block';
+    popup.classList.add('show');
+    popup.classList.remove('hide');
+
+    setTimeout(() => {
+        popup.classList.add('hide');
+        popup.classList.remove('show');
+    }, 3000);
+    
+    setTimeout(() => {
+        popup.style.display = 'none';
+    }, 3500);
+}
+function showLoading() {
+    document.getElementById('loading').classList.remove('hidden');
+}
+
+function hideLoading() {
+    document.getElementById('loading').classList.add('hidden');
+}
 });
