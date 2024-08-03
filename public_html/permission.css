@@ -297,7 +297,10 @@ html, body {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+<<<<<<< HEAD
     margin-left: 10px; 
+=======
+>>>>>>> refs/remotes/origin/test
     margin-left: 10px; /* Added space between buttons */
 }
 

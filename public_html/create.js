@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const firstName = document.getElementById('firstName').value;
         const lastName = document.getElementById('lastName').value;
         const phone = document.getElementById('phone').value;
-        const email = document.getElementById('email').value;
+        const email = document.getElementById('email').value.toLowerCase();
         const pass = document.getElementById('password').value;
 
         const signupData = {
