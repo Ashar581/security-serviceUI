@@ -297,9 +297,7 @@ html, body {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-<<<<<<< HEAD
     margin-left: 10px; 
-=======
     margin-left: 10px; /* Added space between buttons */
 }
 
@@ -429,5 +427,4 @@ html, body {
 .popup .close-btn:hover {
     background-color: white;
     color: red;
->>>>>>> refs/remotes/origin/test
 }
