@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Input</title>
+    <link rel="stylesheet" href="security.css">
+</head>
+<body>
+    <header>
+        <button class="back-btn">
+            <span class="icon">&larr;</span>
+        </button>
+        <h1>Security</h1>
+    </header>
+    <main>
+        <div class="settings-section">
+            <h2>Add Location Watchers</h2>
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <div id="tagsContainer" class="tags-container"></div>
+                    <input type="text" id="emailInput" placeholder="Enter email addresses">
+                </div>
+                <button id="addWatcherBtn" class="btn">Add</button>
+                <ul id="suggestions" class="suggestions-list"></ul>
+                <div id="responseMessage" class="response-message"></div>
+            </div>
+        </div>
+    </main>
+    <script src="security.js"></script>
+</body>
+</html>
