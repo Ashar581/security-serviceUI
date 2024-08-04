@@ -1,46 +1,65 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const emailInput = document.getElementById('emailInput');
-    const suggestionsList = document.getElementById('suggestions');
-    const tagsContainer = document.getElementById('tagsContainer');
+    const emailInputWatchers = document.getElementById('emailInputWatchers');
+    const suggestionsListWatchers = document.getElementById('suggestionsWatchers');
+    const tagsContainerWatchers = document.getElementById('tagsContainerWatchers');
     const addWatcherBtn = document.getElementById('addWatcherBtn');
-    const responseMessage = document.getElementById('responseMessage');
+
+    const emailInputSOS = document.getElementById('emailInputSOS');
+    const suggestionsListSOS = document.getElementById('suggestionsSOS');
+    const tagsContainerSOS = document.getElementById('tagsContainerSOS');
+    const addSosBtn = document.getElementById('addSOSBtn');
 
     const backButton = document.querySelector('.back-btn');
-    
+
     if (backButton) {
         backButton.addEventListener('click', () => {
-            window.location.href = 'user.html'; 
+            window.location.href = 'user.html';
         });
     }
 
     let controller;
 
-    emailInput.addEventListener('input', () => {
-        const query = emailInput.value.trim();
-        if (query.length > 0) {
-            emailInput.placeholder = ''; // Remove placeholder on input
-            fetchEmailSuggestions(query);
-        } else {
-            emailInput.placeholder = 'Enter email addresses'; // Restore placeholder if input is empty
-            suggestionsList.innerHTML = '';
-            suggestionsList.style.display = 'none';
-        }
-    });
+    function handleInput(inputElement, suggestionsList) {
+        inputElement.addEventListener('input', () => {
+            const query = inputElement.value.trim();
+            if (query.length > 0) {
+                inputElement.placeholder = ''; // Remove placeholder on input
+                fetchEmailSuggestions(query, suggestionsList);
+            } else {
+                inputElement.placeholder = 'Enter email addresses'; // Restore placeholder if input is empty
+                suggestionsList.innerHTML = '';
+                suggestionsList.style.display = 'none';
+            }
+        });
+    }
 
-    suggestionsList.addEventListener('click', (e) => {
-        if (e.target.tagName === 'LI') {
-            addTag(e.target.textContent);
-            suggestionsList.innerHTML = '';
-            suggestionsList.style.display = 'none';
-        }
-    });
+    function handleSuggestionsList(suggestionsList, tagsContainer, inputElement) {
+        suggestionsList.addEventListener('click', (e) => {
+            if (e.target.tagName === 'LI') {
+                addTag(e.target.textContent, tagsContainer, inputElement);
+                suggestionsList.innerHTML = '';
+                suggestionsList.style.display = 'none';
+            }
+        });
+    }
 
-    addWatcherBtn.addEventListener('click', () => {
-        const emailList = getTags().map(email => email.trim()); // Ensure no spaces around emails
-        addLocationWatchers(emailList);
-    });
+    function handleAddButton(addButton, tagsContainer, apiUrl, successMessage, failureMessage, emailInput, key) {
+        addButton.addEventListener('click', () => {
+            const emailList = getTags(tagsContainer).map(email => email.trim()); // Ensure no spaces around emails
+            addItems(emailList, apiUrl, successMessage, failureMessage, tagsContainer, emailInput, key);
+        });
+    }
 
-    function fetchEmailSuggestions(query) {
+    handleInput(emailInputWatchers, suggestionsListWatchers);
+    handleInput(emailInputSOS, suggestionsListSOS);
+
+    handleSuggestionsList(suggestionsListWatchers, tagsContainerWatchers, emailInputWatchers);
+    handleSuggestionsList(suggestionsListSOS, tagsContainerSOS, emailInputSOS);
+
+    handleAddButton(addWatcherBtn, tagsContainerWatchers, 'http://localhost:8080/api/user/add-live-listeners', 'Watchers added successfully!', 'Failed to add watchers.', emailInputWatchers, 'allowedUsers');
+    handleAddButton(addSosBtn, tagsContainerSOS, 'http://localhost:8080/api/user/add-sos', 'SOS contacts added successfully!', 'Failed to add SOS contacts.', emailInputSOS, 'sosContacts');
+
+    function fetchEmailSuggestions(query, suggestionsList) {
         if (controller) {
             controller.abort();
         }
@@ -58,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json())
         .then(data => {
             if (data.status && data.data.length > 0) {
-                displaySuggestions(data.data);
+                displaySuggestions(data.data, suggestionsList);
             } else {
                 suggestionsList.innerHTML = '';
                 suggestionsList.style.display = 'none';
@@ -71,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function displaySuggestions(suggestions) {
+    function displaySuggestions(suggestions, suggestionsList) {
         suggestionsList.innerHTML = '';
         suggestions.forEach(suggestion => {
             const li = document.createElement('li');
@@ -81,17 +100,17 @@ document.addEventListener('DOMContentLoaded', () => {
         suggestionsList.style.display = 'block';
     }
 
-    function addTag(tag) {
-        const tags = getTags();
+    function addTag(tag, tagsContainer, emailInput) {
+        const tags = getTags(tagsContainer);
         if (!tags.includes(tag.trim())) {
             tags.push(tag.trim());
-            renderTags(tags);
+            renderTags(tags, tagsContainer);
             emailInput.value = '';
             emailInput.focus();
         }
     }
 
-    function renderTags(tags) {
+    function renderTags(tags, tagsContainer) {
         tagsContainer.innerHTML = '';
         tags.forEach(tag => {
             const tagElement = document.createElement('div');
@@ -100,87 +119,91 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span>${tag}</span>
                 <span class="remove">&times;</span>
             `;
-            tagElement.querySelector('.remove').addEventListener('click', () => removeTag(tag));
+            tagElement.querySelector('.remove').addEventListener('click', () => removeTag(tag, tagsContainer));
             tagsContainer.appendChild(tagElement);
         });
     }
 
-    function removeTag(tag) {
-        const tags = getTags().filter(t => t !== tag.trim());
-        renderTags(tags);
+    function removeTag(tag, tagsContainer) {
+        const tags = getTags(tagsContainer).filter(t => t !== tag.trim());
+        renderTags(tags, tagsContainer);
     }
 
-    function getTags() {
+    function getTags(tagsContainer) {
         return Array.from(tagsContainer.children).map(child => child.textContent.trim().slice(0, -1));
     }
 
-    function addLocationWatchers(emailList) {
+    function addItems(emailList, apiUrl, successMessage, failureMessage, tagsContainer, emailInput, key) {
         showLoading();
         const token = localStorage.getItem('token');
-        fetch('http://localhost:8080/api/user/add-live-listeners', {
+        const body = {};
+        body[key] = emailList;
+        fetch(apiUrl, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
             },
-            body: JSON.stringify({ allowedUsers: emailList }),
+            body: JSON.stringify(body),
         })
         .then(response => response.json())
         .then(data => {
             if (data.status) {
-                showPopup(data.message,'success');
-                clearAll(); // Clear everything after successful response
+                showPopup(successMessage, 'success');
+                clearAll(tagsContainer, emailInput); // Clear everything after successful response
             } else {
-                showPopup(data.message,'error');
+                showPopup(failureMessage, 'error');
             }
         })
         .catch(error => {
-            showPopup(error,'error');
-            console.error('Error adding location watchers:', error);
+            showPopup('An error occurred.', 'error');
+            console.error('Error:', error);
         })
-        .finally(()=>hideLoading());
+        .finally(() => hideLoading());
     }
 
-    function clearAll() {
+    function clearAll(tagsContainer, emailInput) {
         tagsContainer.innerHTML = '';
         emailInput.value = '';
         emailInput.placeholder = 'Enter email addresses'; // Restore placeholder
-        responseMessage.textContent = '';
+        const responseMessage = document.getElementById('responseMessage');
+        if (responseMessage) responseMessage.textContent = '';
     }
 
     // Show popup message
     function showPopup(message, type) {
-    const popup = document.getElementById('popup');
-    const popupMessage = document.getElementById('popupMessage');
-    
-    popupMessage.textContent = message;
+        const popup = document.getElementById('popup');
+        const popupMessage = document.getElementById('popupMessage');
+        
+        popupMessage.textContent = message;
 
-    if (type === 'success') {
-        popup.style.backgroundColor = 'green'; // Green for success
-    } else if (type === 'error') {
-        popup.style.backgroundColor = 'red'; // Red for error
-    } else {
-        popup.style.backgroundColor = 'gray'; // Default color if needed
+        if (type === 'success') {
+            popup.style.backgroundColor = 'green'; // Green for success
+        } else if (type === 'error') {
+            popup.style.backgroundColor = 'red'; // Red for error
+        } else {
+            popup.style.backgroundColor = 'gray'; // Default color if needed
+        }
+        // Ensure the popup is shown
+        popup.style.display = 'block';
+        popup.classList.add('show');
+        popup.classList.remove('hide');
+
+        setTimeout(() => {
+            popup.classList.add('hide');
+            popup.classList.remove('show');
+        }, 3000);
+        
+        setTimeout(() => {
+            popup.style.display = 'none';
+        }, 3500);
     }
-    // Ensure the popup is shown
-    popup.style.display = 'block';
-    popup.classList.add('show');
-    popup.classList.remove('hide');
 
-    setTimeout(() => {
-        popup.classList.add('hide');
-        popup.classList.remove('show');
-    }, 3000);
-    
-    setTimeout(() => {
-        popup.style.display = 'none';
-    }, 3500);
-}
-function showLoading() {
-    document.getElementById('loading').classList.remove('hidden');
-}
+    function showLoading() {
+        document.getElementById('loading').classList.remove('hidden');
+    }
 
-function hideLoading() {
-    document.getElementById('loading').classList.add('hidden');
-}
+    function hideLoading() {
+        document.getElementById('loading').classList.add('hidden');
+    }
 });
