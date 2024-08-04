@@ -14,7 +14,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Event listener for emergency button
     document.querySelector('.emergency-button').addEventListener('click', function() {
-        alert('Emergency button clicked!');
+        // alert('Emergency button clicked!');
+        showLoadingBar();
+        const token = localStorage.getItem('token');
+        console.log(token);
+        fetch('http://localhost:8080/api/user/initiate-sos',{
+            method: 'PUT',
+            headers:{
+            'Authorization' : `Bearer ${token}`,
+            'Content-Type' : 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status==true){
+                showPopup(data.message,'success');
+            }
+            else{
+                showPopup(data.message,'error');
+            }
+        })
+        .catch(error => {
+            showPopup(error,'error')
+        })
+        .finally(()=>{
+            hideLoadingBar();
+        })
         // Add emergency button handling code here
     });
 
