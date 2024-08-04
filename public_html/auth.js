@@ -31,6 +31,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
             localStorage.setItem('phone', data.data.userDto.phoneNumber);
             localStorage.setItem('email',data.data.userDto.email);
             localStorage.setItem('isLive',data.data.userDto.live);
+            console.log(localStorage.getItem('isLive'));
             showPopup(data.message,type = 'success');
             window.location.href = 'user.html';
         }

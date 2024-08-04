@@ -14,10 +14,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Event listener for emergency button
     document.querySelector('.emergency-button').addEventListener('click', function() {
-        // alert('Emergency button clicked!');
         showLoadingBar();
+        //forcefully getting the live location and turning isLive to true
+        getCurrentLocation();
+        localStorage.setItem('isLive','true');
         const token = localStorage.getItem('token');
-        console.log(token);
         fetch('http://localhost:8080/api/user/initiate-sos',{
             method: 'PUT',
             headers:{
