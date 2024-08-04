@@ -405,4 +405,10 @@ section.active {
     text-decoration: none;
     cursor: pointer;
 }
+/* CSS for PDF iframe on mobile */
+@media (max-width: 600px) {
+    .file-content iframe {
+        height: 400px; /* Adjust height for smaller screens */
+    }
+}
 

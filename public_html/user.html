@@ -15,7 +15,6 @@
         <div class="actions">
             <div class="emergency-button">SOS</div>
 
-
             <div class="profile-icon" onclick="showLogoutConfirmation()">
                 <svg class="logout-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path d="M16 13v-2H7V8l-5 4 5 4v-3zM20 3H4c-1.1 0-2 .9-2 2v4h2V5h16v14H4v-4H2v4c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
@@ -36,7 +35,7 @@
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
         <a href="profile.html">Your Profile</a>
         <a href="permission.html">Permissions</a>
-        <a href="#">Security</a>
+        <a href="security.html">Security</a>
     </div>
     <nav>
         <button id="documents-tab" class="active">DOCUMENTS</button>
@@ -58,8 +57,6 @@
                         <input type="file" id="file" name="file" required>
                         <button id="new-document" type="submit">Upload</button>
                     </form>
-<!--                    <button id="new-document">+ New Document</button>-->
-<!--                    <button id="new-folder">+ New Folder</button>-->
                 </div>
             </div>
             
@@ -74,16 +71,14 @@
                 <button id="new-document">View Location</button>
                 <button id="new-folder"> Request Location</button>
             </div>
-<!--            <div id="map" style="height: 400px; width: 100%;"></div>-->
-                        <div id="map" style="height: 400px; width: 100%;"></div>
-
-<!--            <div class="mapContainer">
-                <h3>Live Location Tracker</h3>
-                <p id="status"></p>
-                <div id="map"></div>
-            </div>-->
+                <div id="map" style="height: 400px; width: 100%;"></div>
         </section>
     </main>
+<!-- File Content Popup -->
+<div id="fileContentPopup" class="popup hide">
+    <div id="fileContent" class="file-content"></div>
+    <button id="closeFileContentBtn" class="close-btn">X</button>
+</div>
 <!--    Error Popup-->
     <div class="popup" id="popup">
         <span class="close-btn" id="closeBtn">&times;</span>
@@ -92,7 +87,6 @@
     <div class="footer">
         <p>&copy; 2024 Securellance. All rights reserved.<br>Developer By Ashar Shahab & Neha Shaw</p>
     </div>
-<!--    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>-->
     <script src="user.js"></script>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </body>

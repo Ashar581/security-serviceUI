@@ -11,8 +11,9 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     
     // Show loading bar when form is submitted
     showLoadingBar();
-//    fetch('http://localhost:8080/api/auth/signin', { // Replace with your actual endpoint
-    fetch('https://security-service-f8c1.onrender.com/api/auth/signin', { // Replace with your actual endpoint
+
+    // fetch('http://localhost:8080/api/auth/signin', { // Replace with your actual endpoint
+   fetch('https://security-service-f8c1.onrender.com/api/auth/signin', { // Replace with your actual endpoint
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -26,6 +27,11 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
         }
         else{
             localStorage.setItem('token',data.data.token);
+            localStorage.setItem('fname',data.data.userDto.firstName);
+            localStorage.setItem('name',data.data.userDto.firstName + ' ' + data.data.userDto.lastName);
+            localStorage.setItem('phone', data.data.userDto.phoneNumber);
+            localStorage.setItem('email',data.data.userDto.email);
+            localStorage.setItem('isLive',data.data.userDto.live);
             showPopup(data.message,type = 'success');
             window.location.href = 'user.html';
         }

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Input</title>
+    <link rel="stylesheet" href="security.css">
+</head>
+<body>
+    <div class="popup" id="popup">
+        <span class="close-btn" id="closeBtn">&times;</span>
+        <div id="popupMessage"></div>
+    </div>
+    <!-- Loading Indicator -->
+    <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+    </div>
+    <header>
+        <button class="back-btn">
+            <span class="icon">&larr;</span>
+        </button>
+        <h1>Security</h1>
+    </header>
+    <main>
+        <div class="settings-section">
+            <h2>Add Location Watchers</h2>
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <div id="tagsContainerWatchers" class="tags-container"></div>
+                    <input type="text" id="emailInputWatchers" placeholder="Enter email addresses">
+                </div>
+                <button id="addWatcherBtn" class="btn">Add</button>
+                <ul id="suggestionsWatchers" class="suggestions-list"></ul>
+            </div>
+            <h2>Add SOS</h2>
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <div id="tagsContainerSOS" class="tags-container"></div>
+                    <input type="text" id="emailInputSOS" placeholder="Enter email addresses">
+                </div>
+                <button id="addSOSBtn" class="btn">Add</button>
+                <ul id="suggestionsSOS" class="suggestions-list"></ul>
+            </div>
+        </div>
+    </main>
+    <script src="security.js"></script>
+</body>
+</html>

@@ -7,75 +7,70 @@
     <title>User Permissions</title>
 </head>
 <body>
+    <div id="loader" class="loader"></div>
+    <div class="popup" id="popup">
+        <span class="close-btn" id="closeBtn">&times;</span>
+        <div id="popupMessage"></div>
+    </div>
     <div class="background">
-        <!-- <div class="heading">
-            <h2>Permissions</h2>
-        </div> -->
+        <button class="back-btn" onclick="history.back()">
+            <img src="images/backbtn.png" alt="Back">
+        </button>
         <div class="permissions-container">
             <div class="permission">
                 <div class="checkbox-wrapper">
-                    <label class="checkbox">
-                        <input class="checkbox__trigger visuallyhidden" type="checkbox" id="contacts-permission" />
-                        <span class="checkbox__symbol">
-                            <svg aria-hidden="true" class="icon-checkbox" width="28px" height="28px" viewBox="0 0 28 28" version="1" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M4 14l8 7L24 7"></path>
-                            </svg>
-                        </span>
-                        <p class="checkbox__textwrapper">Contacts Permission</p>
+                    <p>EMAIL</p>
+                    <button class="edit-btn" onclick="openModal()">Edit</button>
+                </div>
+            </div>
+            <div class="permission">
+                <div class="checkbox-wrapper">
+                    <label class="toggle">
+                        <input class="toggle__trigger visuallyhidden" type="checkbox" id="location-permission" />
+                        <span class="toggle__slider"></span>
+                        <p class="toggle__textwrapper">Location Permission</p>
                     </label>
                 </div>
             </div>
             <div class="permission">
                 <div class="checkbox-wrapper">
-                    <label class="checkbox">
-                        <input class="checkbox__trigger visuallyhidden" type="checkbox" id="location-permission" />
-                        <span class="checkbox__symbol">
-                            <svg aria-hidden="true" class="icon-checkbox" width="28px" height="28px" viewBox="0 0 28 28" version="1" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M4 14l8 7L24 7"></path>
-                            </svg>
-                        </span>
-                        <p class="checkbox__textwrapper">Location Permission</p>
+                    <label class="toggle">
+                        <input class="toggle__trigger visuallyhidden" type="checkbox" id="storage-permission" />
+                        <span class="toggle__slider"></span>
+                        <p class="toggle__textwrapper">Storage Permission</p>
                     </label>
                 </div>
             </div>
             <div class="permission">
                 <div class="checkbox-wrapper">
-                    <label class="checkbox">
-                        <input class="checkbox__trigger visuallyhidden" type="checkbox" id="storage-permission" />
-                        <span class="checkbox__symbol">
-                            <svg aria-hidden="true" class="icon-checkbox" width="28px" height="28px" viewBox="0 0 28 28" version="1" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M4 14l8 7L24 7"></path>
-                            </svg>
-                        </span>
-                        <p class="checkbox__textwrapper">Storage Permission</p>
+                    <label class="toggle">
+                        <input class="toggle__trigger visuallyhidden" type="checkbox" id="notifications-permission" />
+                        <span class="toggle__slider"></span>
+                        <p class="toggle__textwrapper">Notifications Permission</p>
                     </label>
                 </div>
             </div>
             <div class="permission">
                 <div class="checkbox-wrapper">
-                    <label class="checkbox">
-                        <input class="checkbox__trigger visuallyhidden" type="checkbox" id="notifications-permission" />
-                        <span class="checkbox__symbol">
-                            <svg aria-hidden="true" class="icon-checkbox" width="28px" height="28px" viewBox="0 0 28 28" version="1" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M4 14l8 7L24 7"></path>
-                            </svg>
-                        </span>
-                        <p class="checkbox__textwrapper">Notifications Permission</p>
+                    <label class="toggle">
+                        <input class="toggle__trigger visuallyhidden" type="checkbox" id="sms-permission" />
+                        <span class="toggle__slider"></span>
+                        <p class="toggle__textwrapper">SMS Permission</p>
                     </label>
                 </div>
             </div>
-            <div class="permission">
-                <div class="checkbox-wrapper">
-                    <label class="checkbox">
-                        <input class="checkbox__trigger visuallyhidden" type="checkbox" id="sms-permission" />
-                        <span class="checkbox__symbol">
-                            <svg aria-hidden="true" class="icon-checkbox" width="28px" height="28px" viewBox="0 0 28 28" version="1" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M4 14l8 7L24 7"></path>
-                            </svg>
-                        </span>
-                        <p class="checkbox__textwrapper">SMS Permission</p>
-                    </label>
-                </div>
+        </div>
+    </div>
+    <div id="emailModal" class="modal">
+        <div class="modal-content">
+            <h2>Manage Email Permissions</h2>
+            <div class="email-list">
+                <!-- Existing emails will be displayed here -->
+            </div>
+            <div class="add-email">
+                <input type="email" id="new-email" placeholder="Enter email address">
+                <button onclick="addEmail()">Add</button>
+                <button onclick="closeModal()">Done</button>
             </div>
         </div>
     </div>

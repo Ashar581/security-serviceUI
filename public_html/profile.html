@@ -8,43 +8,62 @@
 </head>
 <body>
     <div class="profile-container">
+        <button class="back-btn" onclick="history.back()">
+            <img src="images/backbtn.png" alt="Back">
+        </button>
         <div class="greeting-section">
             <!-- <img src="images/image.png" alt="MESSAGE"> -->
         </div>
         <div class="profile-section">
             <div class="avatar">
-                <img src="images/user.jpg" alt="User Avatar">
+                <img id="profile-picture" src="images/user.jpg" alt="User Avatar">
+                <input type="file" id="upload-picture" style="display:none" accept="image/*">
+                <!-- Add Delete Icon -->
+                <img id="delete-picture-icon" src="images/delete.png" alt="Delete Picture" style="cursor: pointer; width: 24px; height: 24px;">
             </div>
             <div class="profile-details">
                 <div class="detail">
                     <p class="label">Name:</p>
-                    <p class="value">Ashar Shahab</p>
+                    <input type="text" id="name" class="value" readonly>
                 </div>
                 <hr>
                 <div class="detail">
                     <p class="label">Email:</p>
-                    <p class="value">asharshahab@gmail.com</p>
+                    <input type="text" id="email" class="value" readonly>
                 </div>
                 <hr>
                 <div class="detail">
                     <p class="label">Contact No.:</p>
-                    <p class="value">7278108555</p>
+                    <input type="text" id="contact" class="value" readonly>
                 </div>
                 <hr>
                 <div class="detail">
                     <p class="label">Home Location:</p>
-                    <p class="value">Central Avenue, Kolkata</p>
+                    <input type="text" id="home-location" class="value" readonly>
                 </div>
                 <hr>
                 <div class="detail">
                     <p class="label">Office Location:</p>
-                    <p class="value">Saltlake Sec - 5, Godrej Waterside</p>
+                    <input type="text" id="office-location" class="value" readonly>
                 </div>
             </div>
             <div class="edit-icon">
-                <img src="images/edit3.jpg" alt="Edit Profile">
+                <img src="images/edit3.jpg" alt="Edit Profile" id="edit-icon" style="cursor: pointer;">
             </div>
+            <button id="save-button" style="display:none">Save</button>
         </div>
     </div>
+    <div id="popup-message" class="popup hidden">
+        <div class="popup-content">
+            <span id="popup-message-text"></span>
+            <button id="popup-close-button">Close</button>
+        </div>
+    </div>
+    <!-- Loading Indicator -->
+    <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+    </div>
+
+    <script src="profile.js"></script>
 </body>
 </html>
