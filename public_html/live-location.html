@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Location</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+
+        const map = L.map('map').setView([0, 0], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        const emergencyIcon = L.icon({
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/1828/1828843.png',
+            iconSize: [38, 38],
+            iconAnchor: [19, 38],
+            popupAnchor: [0, -38]
+        });
+
+        let userMarker = null;
+
+        function fetchLocation() {
+            fetch('https://security-service-f8c1.onrender.com/api/location/send-sos-live', {
+            // fetch('http://localhost:8080/api/location/send-sos-live', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status) {
+                    const longitude = data.data.longitude;
+                    const latitude = data.data.latitude;
+                    const name = data.data.name;
+                    updateMap(latitude, longitude, name);
+                } else {
+                    console.error('Failed to fetch location:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching location:', error);
+            });
+        }
+
+        function updateMap(latitude, longitude, name) {
+            if (userMarker) {
+                userMarker.setLatLng([latitude, longitude])
+                          .bindTooltip(name, { permanent: true, direction: 'top', offset: [0, -20] })
+                          .openTooltip();
+            } else {
+                userMarker = L.marker([latitude, longitude], { icon: emergencyIcon })
+                              .addTo(map)
+                              .bindTooltip(name, { permanent: true, direction: 'top', offset: [0, -20] })
+                              .openTooltip();
+                map.setView([latitude, longitude], 13); // Set the initial view to the user's location
+            }
+        }
+
+        fetchLocation(); // Initial fetch
+        setInterval(fetchLocation, 5000); // Fetch location every 5 seconds
+    </script>
+</body>
+</html>

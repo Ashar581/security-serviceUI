@@ -19,16 +19,22 @@ document.addEventListener('DOMContentLoaded', function() {
         getCurrentLocation();
         localStorage.setItem('isLive','true');
         const token = localStorage.getItem('token');
-        fetch('http://localhost:8080/api/user/initiate-sos',{
+        const dto = {
+            sosLocation : generateShareableLink()
+        }
+        fetch('https://security-service-f8c1.onrender.com/api/user/initiate-sos',{
+        // fetch('http://localhost:8080/api/user/initiate-sos',{
             method: 'PUT',
             headers:{
             'Authorization' : `Bearer ${token}`,
             'Content-Type' : 'application/json'
-            }
+            },
+            body : JSON.stringify(dto)
         })
         .then(response => response.json())
         .then(data => {
             if(data.status==true){
+                console.log(shareableLink);
                 showPopup(data.message,'success');
             }
             else{
@@ -89,8 +95,8 @@ document.getElementById('fileUploadForm').addEventListener('submit', function(ev
 
     showLoadingBar(); // Show loading bar when form is submitted
     const token = localStorage.getItem('token');
-//    fetch('https://security-service-f8c1.onrender.com/api/files/add', {    
-    fetch('http://localhost:8080/api/files/add', {
+   fetch('https://security-service-f8c1.onrender.com/api/files/add', {    
+    // fetch('http://localhost:8080/api/files/add', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`
@@ -171,8 +177,8 @@ async function fetchUserName() {
     if(localStorage.getItem('fname')===null){
         try {
             showLoadingBar();
-//          const response = await fetch('https://security-service-f8c1.onrender.com/api/user/view', {        
-            const response = await fetch('http://localhost:8080/api/user/view', {
+         const response = await fetch('https://security-service-f8c1.onrender.com/api/user/view', {        
+            // const response = await fetch('http://localhost:8080/api/user/view', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -275,8 +281,8 @@ function initMap() {
 async function fetchLocation(retryDelay = 5000) {
     try {
         const token = localStorage.getItem('token');
-//        const response = await fetch('https://security-service-f8c1.onrender.com/api/location/get-location', {        
-        const response = await fetch('http://localhost:8080/api/location/get-location', {
+       const response = await fetch('https://security-service-f8c1.onrender.com/api/location/get-location', {        
+        // const response = await fetch('http://localhost:8080/api/location/get-location', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -383,8 +389,8 @@ window.addEventListener('resize', () => {
 function loadFiles() {
     showLoadingBar();
     const token = localStorage.getItem('token');
-//    fetch('https://security-service-f8c1.onrender.com/api/files/view-all', {
-    fetch('http://localhost:8080/api/files/view-all', {
+   fetch('https://security-service-f8c1.onrender.com/api/files/view-all', {
+    // fetch('http://localhost:8080/api/files/view-all', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -439,17 +445,12 @@ function loadFiles() {
     });
 }
 
-//// Hide the loading bar once the entire page is fully loaded
-//window.addEventListener('load', function() {
-//    hideLoadingBar();
-//});
-
 // Delete file
 function deleteFile(fileId) {
     showLoadingBar();
     const token = localStorage.getItem('token');
-//    fetch(`https://security-service-f8c1.onrender.com/api/files/delete/${fileId}`, {
-    fetch(`http://localhost:8080/api/files/delete/${fileId}`, {
+   fetch(`https://security-service-f8c1.onrender.com/api/files/delete/${fileId}`, {
+    // fetch(`http://localhost:8080/api/files/delete/${fileId}`, {
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${token}`
@@ -499,8 +500,8 @@ async function sendLocationToBackend(latitude, longitude) {
     };
 
     try {
-//        const response = await fetch('https://security-service-f8c1.onrender.com/api/location/send-live', {
-        const response = await fetch('http://localhost:8080/api/location/send-live', {
+       const response = await fetch('https://security-service-f8c1.onrender.com/api/location/send-live', {
+        // const response = await fetch('http://localhost:8080/api/location/send-live', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -527,8 +528,8 @@ async function sendLocationToBackend(latitude, longitude) {
 function viewFile(fileId, fileName) {
     showLoadingBar();
     const token = localStorage.getItem('token');
-//    fetch(`https://security-service-f8c1.onrender.com/api/files/view/${fileId}`, {
-    fetch(`http://localhost:8080/api/files/view/${fileId}`, {
+   fetch(`https://security-service-f8c1.onrender.com/api/files/view/${fileId}`, {
+    // fetch(`http://localhost:8080/api/files/view/${fileId}`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`
@@ -574,3 +575,10 @@ document.getElementById('closeFileContentBtn').addEventListener('click', () => {
     }, 500); // Sync with the fade-out transition duration
 });
 
+//generating link
+function generateShareableLink() {
+    const token = localStorage.getItem('token');
+    const baseUrl = window.location.origin; // Get the base URL of the current page
+    const shareableLink = `${baseUrl}/live-location.html?token=${token}`;
+    return shareableLink;
+}
