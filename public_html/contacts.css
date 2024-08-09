@@ -1,0 +1,207 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #e2eafc;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #4462a8;
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 10px; /* Add border radius to the header */
+    margin-bottom: 20px; /* Add margin to create space below the header */
+}
+footer {
+    text-align: center;
+    font-size: 12px;
+    color: #777;
+    margin-top: 20px
+}
+.logo {
+    width: 80px; /* Adjust the size as needed */
+    height: auto;
+    display: block;
+}
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px; /* Add border radius to the main container */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add shadow to the main container */
+    overflow: auto;
+}
+.tabs {
+    display: flex;
+    justify-content: space-around; /* Space tabs evenly */
+    background-color: #6479ac; /* Background color for tabs */
+    padding: 10px 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Optional shadow for tabs */
+}
+
+.tab {
+    background-color: transparent;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.tab:hover {
+    border-radius: 8px;
+    background-color: #555; /* Background on hover */
+}
+
+.tab.active {
+    background-color: #29385c; /* Active tab background */
+    border-radius: 8px;
+    border-bottom: 2px solid white; /* Optional underline for active tab */
+}
+
+.content {
+    flex: 1; /* Take up remaining space */
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #f2f2f2; /* Example background color */
+    overflow-y: auto; /* Allows scrolling if content overflows */
+}
+/* Search Panel Styles */
+.search-panel {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+#searchInput {
+    width: 80%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#searchButton {
+    padding: 10px 20px;
+    background-color: #4462a8;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#searchButton:hover {
+    background-color: #29385c;
+}
+
+h2{
+    font-family: Arial, sans-serif;
+    color: #93c5e6;
+    margin: auto;
+}
+/* Popup Styles */
+.popup {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none; /* Initially hidden */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 80%;
+    max-width: 600px;
+    padding: 15px;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    z-index: 1000;
+    text-align: center;
+}
+
+/* Success and error classes for different popup styles */
+.popup.success {
+    border: 2px solid green;
+    color: green;
+}
+
+.popup.error {
+    border: 2px solid red;
+    color: red;
+}
+
+/* Responsive styling for smaller screens */
+@media (max-width: 600px) {
+    .popup {
+        width: 90%;
+        max-width: none;
+    }
+}
+
+
+.popup-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#popup-message-text {
+    flex: 1;
+}
+
+#popup-close-button {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#popup-close-button:hover {
+    text-decoration: underline;
+}
+
+.hidden {
+    display: none;
+}
+/* Loading Indicator Styles */
+.loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.hidden {
+    display: none;
+}
+
+.spinner {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #3498db;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Contacts</title>
+    <link rel="stylesheet" href="contacts.css">
+</head>
+<body>
+    <header>
+        <img src="images/logo_transparent.png" alt="Logo" class="logo">
+        <h2>My Contacts</h2>
+    </header>
+    <main>
+        <div class="search-panel">
+            <input type="text" id="searchInput" placeholder="Search contacts...">
+            <button id="searchButton">Search</button>
+        </div>
+    
+        <div class="tabs">
+            <button class="tab active" data-target="viewAll">View All</button>
+            <button class="tab" data-target="sos">SOS</button>
+            <button class="tab" data-target="live">Live</button>
+        </div>
+    
+        <div class="content">
+            Will be displaying the filtered data soon...
+        </div>
+    </main>
+    
+    <footer>
+        <p>&copy; 2024 Securellance. All rights reserved.<br>Developer By Ashar Shahab & Neha Shaw</p>
+    </footer>
+    <div id="loader" class="loader"></div>
+    <div id="popup" class="popup">
+        <button class="close-btn" onclick="closePopup()">x</button>
+        <span id="popupMessage"></span>
+    </div>
+<script src="contacts.js"></script>
+</body>
+</html>
