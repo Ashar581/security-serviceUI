@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Initialize the tab functionality
 function initializeTabs() {
+    fetchContent('view all');
     document.querySelectorAll('.tab').forEach(button => {
         button.addEventListener('click', () => {
             // Remove active class from all tabs
@@ -18,18 +19,114 @@ function initializeTabs() {
             // Add active class to the clicked tab
             button.classList.add('active');
 
-            // Hide all tab contents (if you had any content to display per tab)
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            // Hide all tab contents
+            document.querySelectorAll('.content').forEach(content => content.innerHTML = ''); // Clear content
 
-            // Show the content corresponding to the clicked tab (if applicable)
-            const target = button.getAttribute('data-target');
-            if (target) {
-                document.getElementById(target).classList.add('active');
-            }
+            // Fetch and display content based on the clicked tab
+            const tabType = button.textContent.trim().toLowerCase();
+            fetchContent(tabType);
         });
     });
 }
 
+// Fetch content based on the tab type
+async function fetchContent(type) {
+    // showLoading(); // Show spinner
+    const url = 'http://localhost:8080/api/user/view-contacts';
+    const token = localStorage.getItem('token'); // Replace with your actual token
+
+    let queryParam = '';
+
+    switch (type) {
+        case 'view all':
+            queryParam = ''; // No additional parameter needed for 'View All'
+            break;
+        case 'live':
+            queryParam = '?type=live';
+            break;
+        case 'sos':
+            queryParam = '?type=sos';
+            break;
+        default:
+            return;
+    }
+
+    try {
+        const response = await fetch(url + queryParam, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        const data = await response.json();
+        displayContent(type, data.data);
+    } catch (error) {
+        console.error('Error fetching content:', error);
+        showPopup('Error fetching content', 'error');
+    } finally {
+        hideLoading(); // Ensure hideLoading is always called
+    }
+}
+
+function displayContent(type, data) {
+    const contentDiv = document.querySelector('.content');
+    
+    // Clear existing content
+    contentDiv.innerHTML = '';
+
+    if (Array.isArray(data) && data.length > 0) {
+        data.forEach(item => {
+            // Create a div for each item
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'content-item';
+
+            // Create a span to display the item
+            const itemText = document.createElement('span');
+            itemText.textContent = item;
+            itemDiv.appendChild(itemText);
+
+            // Create a remove button
+            const removeButton = document.createElement('button');
+            removeButton.textContent = '×'; // Use a simple cross symbol
+            removeButton.className = 'remove-btn';
+            removeButton.addEventListener('click', () => removeItem(item));
+            itemDiv.appendChild(removeButton);
+
+            // Append the item div to the content div
+            contentDiv.appendChild(itemDiv);
+        });
+    } else {
+        contentDiv.innerHTML = `<p>No data available for ${type}.</p>`;
+    }
+}
+
+// Function to remove an item
+function removeItem(item) {
+    const url = 'http://localhost:8080/api/user/remove-contact'; // Update with your actual endpoint
+    const token = localStorage.getItem('token'); // Replace with your actual token
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ item }) // Send the item to be removed
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Handle success response if needed
+        showPopup('Item removed successfully', 'success');
+        // Optionally refresh the content
+        const activeTab = document.querySelector('.tab.active').textContent.trim().toLowerCase();
+        fetchContent(activeTab);
+    })
+    .catch(error => {
+        console.error('Error removing item:', error);
+        showPopup('Error removing item', 'error');
+    });
+}
 // Show a popup message
 function showPopup(message, type) {
     const popup = document.getElementById('popup');
