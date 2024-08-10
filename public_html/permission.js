@@ -35,8 +35,8 @@ function updateToggleStyles() {
 
 // Handle toggle button change event
 async function handleToggleChange() {
-    // const apiUrl = 'https://security-service-f8c1.onrender.com/api/user/update';
-    const apiUrl = 'http://localhost:8080/api/user/update';
+    const apiUrl = 'https://security-service-f8c1.onrender.com/api/user/update';
+    // const apiUrl = 'http://localhost:8080/api/user/update';
     const token = localStorage.getItem('token');  // Replace with your actual Bearer token
 
     document.querySelectorAll('input[type="checkbox"]').forEach(toggle => {
@@ -151,8 +151,8 @@ async function sendLocationToBackend(latitude, longitude) {
     };
 
     try {
-    //    const response = await fetch('https://security-service-f8c1.onrender.com/api/location/send-live', {
-        const response = await fetch('http://localhost:8080/api/location/send-live', {
+       const response = await fetch('https://security-service-f8c1.onrender.com/api/location/send-live', {
+        // const response = await fetch('http://localhost:8080/api/location/send-live', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

@@ -33,8 +33,8 @@ function loadProfile() {
     document.getElementById('office-location').value = officeLocation;
 
     const token = localStorage.getItem('token');
-    // fetch('https://security-service-f8c1.onrender.com/api/profile/view',{
-    fetch('http://localhost:8080/api/profile/view', {
+    fetch('https://security-service-f8c1.onrender.com/api/profile/view',{
+    // fetch('http://localhost:8080/api/profile/view', {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`
@@ -67,8 +67,8 @@ function saveProfile() {
     const officeLocation = document.getElementById('office-location').value;
 
     const token = localStorage.getItem('token');
-    // fetch('https://security-service-f8c1.onrender.com/api/user/update',{
-    fetch('http://localhost:8080/api/user/update', {
+    fetch('https://security-service-f8c1.onrender.com/api/user/update',{
+    // fetch('http://localhost:8080/api/user/update', {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -111,8 +111,8 @@ function uploadPicture(event) {
     formData.append('profilePicture', file);
 
     const token = localStorage.getItem('token');
-    // fetch('https://security-service-f8c1.onrender.com/api/profile/add',{
-    fetch('http://localhost:8080/api/profile/add', {
+    fetch('https://security-service-f8c1.onrender.com/api/profile/add',{
+    // fetch('http://localhost:8080/api/profile/add', {
         method: 'PUT',
         headers: {
             'Authorization': `Bearer ${token}`
@@ -138,8 +138,8 @@ function uploadPicture(event) {
 function deletePicture() {
     showLoading();
     const token = localStorage.getItem('token');
-    // fetch('https://security-service-f8c1.onrender.com/api/profile/remove',{
-    fetch('http://localhost:8080/api/profile/remove', {
+    fetch('https://security-service-f8c1.onrender.com/api/profile/remove',{
+    // fetch('http://localhost:8080/api/profile/remove', {
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${token}`
