@@ -13,9 +13,10 @@
     </header>
     <main>
         <div class="search-panel">
-            <input type="text" id="searchInput" placeholder="Search contacts...">
+            <input type="text" id="searchInput" placeholder="Search contacts..." list="suggestions">
+            <datalist id="suggestions"></datalist>
             <button id="searchButton">Search</button>
-        </div>
+        </div>        
     
         <div class="tabs">
             <button class="tab active" data-target="viewAll">View All</button>
@@ -23,8 +24,8 @@
             <button class="tab" data-target="live">Live</button>
         </div>
     
-        <div class="content">
-        </div>
+        <div class="content"></div>
+        <a href="user.html" class="back-button"><span>&larr;</span></a>
     </main>
     
     <footer>
@@ -34,6 +35,11 @@
         <button class="close-btn" onclick="closePopup()">x</button>
         <span id="popupMessage"></span>
     </div>
+
+    <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+    </div>
+
 <script src="contacts.js"></script>
 </body>
 </html>
