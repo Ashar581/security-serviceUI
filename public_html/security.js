@@ -56,11 +56,11 @@ document.addEventListener('DOMContentLoaded', () => {
     handleSuggestionsList(suggestionsListWatchers, tagsContainerWatchers, emailInputWatchers);
     handleSuggestionsList(suggestionsListSOS, tagsContainerSOS, emailInputSOS);
 
-    // handleAddButton(addWatcherBtn, tagsContainerWatchers, 'http://localhost:8080/api/user/add-live-listeners', 'Watchers added successfully!', 'Failed to add watchers.', emailInputWatchers, 'allowedUsers');
-    // handleAddButton(addSosBtn, tagsContainerSOS, 'http://localhost:8080/api/user/add-sos', 'SOS contacts added successfully!', 'Failed to add SOS contacts.', emailInputSOS, 'sosContacts');
+    handleAddButton(addWatcherBtn, tagsContainerWatchers, 'http://localhost:8080/api/user/add-live-listeners', 'Watchers added successfully!', 'Failed to add watchers.', emailInputWatchers, 'allowedUsers');
+    handleAddButton(addSosBtn, tagsContainerSOS, 'http://localhost:8080/api/user/add-sos', 'SOS contacts added successfully!', 'Failed to add SOS contacts.', emailInputSOS, 'sosContacts');
 
-    handleAddButton(addWatcherBtn, tagsContainerWatchers, 'https://security-service-f8c1.onrender.com/api/user/add-live-listeners', 'Watchers added successfully!', 'Failed to add watchers.', emailInputWatchers, 'allowedUsers');
-    handleAddButton(addSosBtn, tagsContainerSOS, 'https://security-service-f8c1.onrender.com/api/user/add-sos', 'SOS contacts added successfully!', 'Failed to add SOS contacts.', emailInputSOS, 'sosContacts');
+    // handleAddButton(addWatcherBtn, tagsContainerWatchers, 'https://security-service-f8c1.onrender.com/api/user/add-live-listeners', 'Watchers added successfully!', 'Failed to add watchers.', emailInputWatchers, 'allowedUsers');
+    // handleAddButton(addSosBtn, tagsContainerSOS, 'https://security-service-f8c1.onrender.com/api/user/add-sos', 'SOS contacts added successfully!', 'Failed to add SOS contacts.', emailInputSOS, 'sosContacts');
 
     function fetchEmailSuggestions(query, suggestionsList) {
         if (controller) {
@@ -71,8 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const signal = controller.signal;
         const token = localStorage.getItem('token'); // Get token from localStorage
 
-        fetch(`https://security-service-f8c1.onrender.com/api/user/email-search?query=${query}`,{
-        // fetch(`http://localhost:8080/api/user/email-search?query=${query}`, {
+        // fetch(`https://security-service-f8c1.onrender.com/api/user/email-search?query=${query}`,{
+        fetch(`http://localhost:8080/api/user/email-search?query=${query}`, {
             signal,
             headers: {
                 'Authorization': `Bearer ${token}` // Add Authorization header

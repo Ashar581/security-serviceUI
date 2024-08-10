@@ -34,8 +34,8 @@ function setActiveTab(button) {
 
 // Fetch and display content based on the selected tab
 async function fetchContent(type) {
-    const url = 'https://security-service-f8c1.onrender.com/api/user/view-contacts';
-    // const url = 'http://localhost:8080/api/user/view-contacts';
+    // const url = 'https://security-service-f8c1.onrender.com/api/user/view-contacts';
+    const url = 'http://localhost:8080/api/user/view-contacts';
     const token = localStorage.getItem('token');
     let queryParam = '';
 
@@ -204,8 +204,8 @@ async function sendLocationToBackend(latitude, longitude) {
     };
 
     try {
-       const response = await fetch('https://security-service-f8c1.onrender.com/api/location/send-live', {
-        // const response = await fetch('http://localhost:8080/api/location/send-live', {
+    //    const response = await fetch('https://security-service-f8c1.onrender.com/api/location/send-live', {
+        const response = await fetch('http://localhost:8080/api/location/send-live', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -231,8 +231,8 @@ async function sendLocationToBackend(latitude, longitude) {
 
 // Function to remove an item
 function removeItem(item) {
-    const url = 'https://security-service-f8c1.onrender.com//api/user/remove-contact';
-    // const url = 'http://localhost:8080/api/user/remove-contact';
+    // const url = 'https://security-service-f8c1.onrender.com//api/user/remove-contact';
+    const url = 'http://localhost:8080/api/user/remove-contact';
     const token = localStorage.getItem('token');
 
     fetch(url, {
