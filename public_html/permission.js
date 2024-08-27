@@ -35,9 +35,9 @@ function updateToggleStyles() {
 
 // Handle toggle button change event
 async function handleToggleChange() {
-    // const apiUrl = 'https://security-service-f8c1.onrender.com/api/user/update';
-    const apiUrl = 'http://localhost:8080/api/user/update';
-    const token = localStorage.getItem('token');  // Replace with your actual Bearer token
+    const apiUrl = 'https://securellance.onrender.com/api/user/update';
+    // const apiUrl = 'http://localhost:8080/api/user/update';
+    const token = localStorage.getItem('token');  
 
     document.querySelectorAll('input[type="checkbox"]').forEach(toggle => {
         toggle.addEventListener('change', async function() {
@@ -79,6 +79,7 @@ async function handleToggleChange() {
                 console.log('API response:', result);
                 //checking if location was switched on/off
                 notificationPopup();
+                getCurrentLocation(localStorage.getItem('isLive'))
             } catch (error) {
                 console.error('Error:', error);
             } finally {
@@ -126,18 +127,20 @@ function deleteEmail(button) {
 }
 
 //Fetching live location
-async function getCurrentLocation() {
+async function getCurrentLocation(status) {
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(async (position) => {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
-            console.log('Current Location:', { latitude, longitude });
+        if(status==='true'){
+            navigator.geolocation.getCurrentPosition(async (position) => {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+                console.log('Current Location:', { latitude, longitude });
 
-            await sendLocationToBackend(latitude, longitude);
-        }, (error) => {
-            console.error('Error getting location:', error.message);
-            showPopup('Live Location Was Denied','error');
-        });
+                await sendLocationToBackend(latitude, longitude);
+            }, (error) => {
+                console.error('Error getting location:', error.message);
+                showPopup('Live Location Was Denied','error');
+            });
+        }
     } else {
         console.error('Geolocation is not supported by this browser.');
     }
@@ -151,8 +154,8 @@ async function sendLocationToBackend(latitude, longitude) {
     };
 
     try {
-    //    const response = await fetch('https://security-service-f8c1.onrender.com/api/location/send-live', {
-        const response = await fetch('http://localhost:8080/api/location/send-live', {
+       const response = await fetch('https://securellance.onrender.com/api/location/send-live', {
+        // const response = await fetch('http://localhost:8080/api/location/send-live', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -165,7 +168,7 @@ async function sendLocationToBackend(latitude, longitude) {
         console.log('Live Location Update Response:', data); // Debugging
 
         if (data.status) {
-            getCurrentLocation();
+            getCurrentLocation(localStorage.getItem('isLive'));
             console.log('Location updated successfully');
         } else {
             console.error('Error updating location:', data.message);
@@ -216,7 +219,11 @@ function showPopup(message, type) {
 // Initialize the page
 document.addEventListener('DOMContentLoaded', () => {
     if(localStorage.getItem('isLive')==='true'){
-        getCurrentLocation();
+        document.addEventListener("deviceready", onDeviceReady, false);
+        getCurrentLocation('true');
+    }
+    else{
+        getCurrentLocation('false');
     }
     initializeToggleStates();
     handleToggleChange();
@@ -228,5 +235,35 @@ function notificationPopup(){
         showPopup('Live Location Was Turned On','success');
     }else if(!document.getElementById('location-permission').checked) {
         showPopup('Live Location Was Turned OFF','err');
+    }
+}
+
+//asking permission for location in mobile phone
+function onDeviceReady() {
+    // Check for location permissions
+    var permissions = cordova.plugins.permissions;
+    permissions.checkPermission(permissions.ACCESS_FINE_LOCATION, function(status) {
+        if (!status.hasPermission) {
+            permissions.requestPermission(permissions.ACCESS_FINE_LOCATION, success, error);
+        } else {
+            // Permission already granted, fetch location
+            getCurrentLocation();
+        }
+    }, function(error) {
+        console.error("Failed to check permissions: ", error);
+    });
+
+    function success(status) {
+        if (status.hasPermission) {
+            console.log('inside hasPermission for phone')
+            // Permission granted, fetch location
+            getCurrentLocation();
+        } else {
+            console.warn("Location permission not granted");
+        }
+    }
+
+    function error() {
+        console.error("Permission request failed");
     }
 }

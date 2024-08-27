@@ -66,9 +66,12 @@ document.addEventListener('DOMContentLoaded', function() {
     //if isLive is true then keep sending the current location.
     if(localStorage.getItem('isLive')==='true'){
         console.log("inside get location");
+        document.addEventListener("deviceready", onDeviceReady, false);
         getCurrentLocation();
     }
 });
+//write the code here
+// document.addEventListener("deviceready", onDeviceReady, false);
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('file').addEventListener('change', showFilePopup);
@@ -95,7 +98,7 @@ document.getElementById('fileUploadForm').addEventListener('submit', function(ev
 
     showLoadingBar(); // Show loading bar when form is submitted
     const token = localStorage.getItem('token');
-   fetch('https://security-service-f8c1.onrender.com/api/files/add', {    
+   fetch('https://securellance.onrender.com/api/files/add', {    
     // fetch('http://localhost:8080/api/files/add', {
         method: 'POST',
         headers: {
@@ -177,7 +180,7 @@ async function fetchUserName() {
     if(localStorage.getItem('fname')===null){
         try {
             showLoadingBar();
-         const response = await fetch('https://security-service-f8c1.onrender.com/api/user/view', {        
+         const response = await fetch('https://securellance.onrender.com/api/user/view', {        
             // const response = await fetch('http://localhost:8080/api/user/view', {
                 method: 'GET',
                 headers: {
@@ -281,7 +284,7 @@ function initMap() {
 async function fetchLocation(retryDelay = 5000) {
     try {
         const token = localStorage.getItem('token');
-       const response = await fetch('https://security-service-f8c1.onrender.com/api/location/get-location', {        
+       const response = await fetch('https://securellance.onrender.com/api/location/get-location', {        
         // const response = await fetch('http://localhost:8080/api/location/get-location', {
             method: 'GET',
             headers: {
@@ -299,16 +302,15 @@ async function fetchLocation(retryDelay = 5000) {
 
         if (data.status && data.data.length > 0) {
             let firstMarkerPosition = null;
-            
+
             data.data.forEach(user => {
                 const { latitude, longitude, name, email } = user;
-                console.log(user);
-                
-                if(!latitude && !longitude){
+                const userId = email; // Assuming email is unique for each user
+
+                if (user.longitude===null && user.latitude===null){
                     return
                 }
-                
-                const userId = email; // Assuming email is unique for each user
+
                 if (markers[userId]) {
                     markers[userId].setLatLng([latitude, longitude]);
                     if (!selectedMarker || markers[userId] === selectedMarker) {
@@ -394,7 +396,7 @@ window.addEventListener('resize', () => {
 function loadFiles() {
     showLoadingBar();
     const token = localStorage.getItem('token');
-   fetch('https://security-service-f8c1.onrender.com/api/files/view-all', {
+   fetch('https://securellance.onrender.com/api/files/view-all', {
     // fetch('http://localhost:8080/api/files/view-all', {
         method: 'GET',
         headers: {
@@ -454,7 +456,7 @@ function loadFiles() {
 function deleteFile(fileId) {
     showLoadingBar();
     const token = localStorage.getItem('token');
-   fetch(`https://security-service-f8c1.onrender.com/api/files/delete/${fileId}`, {
+   fetch(`https://securellance.onrender.com/api/files/delete/${fileId}`, {
     // fetch(`http://localhost:8080/api/files/delete/${fileId}`, {
         method: 'DELETE',
         headers: {
@@ -479,10 +481,42 @@ function deleteFile(fileId) {
     });
 }
 
-//Fetching live location
-async function getCurrentLocation() {
+function onDeviceReady() {
+    // Check for location permissions
+    console.log('inside device ready function for permission')
+    var permissions = cordova.plugins.permissions;
+    permissions.checkPermission(permissions.ACCESS_FINE_LOCATION, function(status) {
+        if (!status.hasPermission) {
+            permissions.requestPermission(permissions.ACCESS_FINE_LOCATION, success, error);
+            console.log('inside status false for permission if')
+        } else {
+            // Permission already granted, fetch location
+            getCurrentLocation();
+        }
+    }, function(error) {
+        console.error("Failed to check permissions: ", error);
+    });
+
+    function success(status) {
+        if (status.hasPermission) {
+            console.log('inside hasPermission for phone')
+            // Permission granted, fetch location
+            getCurrentLocation();
+        } else {
+            console.warn("Location permission not granted");
+        }
+    }
+
+    function error() {
+        console.error("Permission request failed");
+    }
+}
+
+async function getCurrentLocation(){
+    console.log('Inside get current location')
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (position) => {
+            console.log('inside navigate.geolocation...')
             const latitude = position.coords.latitude;
             const longitude = position.coords.longitude;
             console.log('Current Location:', { latitude, longitude });
@@ -496,8 +530,27 @@ async function getCurrentLocation() {
         console.error('Geolocation is not supported by this browser.');
     }
 }
+//Fetching live location
+// async function getCurrentLocation() {
+//     console.log('Inside get current location')
+//     if (navigator.geolocation) {
+//         navigator.geolocation.getCurrentPosition(async (position) => {
+//             const latitude = position.coords.latitude;
+//             const longitude = position.coords.longitude;
+//             console.log('Current Location:', { latitude, longitude });
+
+//             await sendLocationToBackend(latitude, longitude);
+//         }, (error) => {
+//             showPopup('Live Location Was Stopped','error');
+//             console.error('Error getting location:', error.message);
+//         });
+//     } else {
+//         console.error('Geolocation is not supported by this browser.');
+//     }
+// }
 
 async function sendLocationToBackend(latitude, longitude) {
+    console.log('inside send current location to backend')
     const token = localStorage.getItem('token');
     const location = {
         latitude: latitude,
@@ -505,7 +558,7 @@ async function sendLocationToBackend(latitude, longitude) {
     };
 
     try {
-       const response = await fetch('https://security-service-f8c1.onrender.com/api/location/send-live', {
+       const response = await fetch('https://securellance.onrender.com/api/location/send-live', {
         // const response = await fetch('http://localhost:8080/api/location/send-live', {
             method: 'PUT',
             headers: {
@@ -533,7 +586,7 @@ async function sendLocationToBackend(latitude, longitude) {
 function viewFile(fileId, fileName) {
     showLoadingBar();
     const token = localStorage.getItem('token');
-   fetch(`https://security-service-f8c1.onrender.com/api/files/view/${fileId}`, {
+   fetch(`https://securellance.onrender.com/api/files/view/${fileId}`, {
     // fetch(`http://localhost:8080/api/files/view/${fileId}`, {
         method: 'GET',
         headers: {
@@ -584,6 +637,7 @@ document.getElementById('closeFileContentBtn').addEventListener('click', () => {
 function generateShareableLink() {
     const token = localStorage.getItem('token');
     const baseUrl = window.location.origin; // Get the base URL of the current page
-    const shareableLink = `${baseUrl}/live-location.html?token=${token}`;
+    // const shareableLink = `${baseUrl}/live-location.html?token=${token}`;
+    const shareableLink = `https://securellance-ui.onrender.com/live-location.html?token=${token}`;
     return shareableLink;
 }
