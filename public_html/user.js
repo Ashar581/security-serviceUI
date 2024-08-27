@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const dto = {
             sosLocation : generateShareableLink()
         }
-        fetch('https://security-service-f8c1.onrender.com/api/user/initiate-sos',{
+        fetch('https://securellance.onrender.com/api/user/initiate-sos',{
         // fetch('http://localhost:8080/api/user/initiate-sos',{
             method: 'PUT',
             headers:{
